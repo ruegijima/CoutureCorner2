@@ -10,7 +10,7 @@ import { db } from "../firebaseConfig/config";
 export async function createUser(userData) {
   try {
     // Add a new document with the user data to the 'users' collection
-    const userRef = await addDoc(collection(db, "users"), {
+    const userRef = await addDoc(collection(db, "user"), {
       ...userData,
       createdAt: new Date().toUTCString() // Add a timestamp for the creation date
     });
@@ -24,7 +24,7 @@ export async function createUser(userData) {
 }
 // Create a new designer
 export async function createDesigner(designerData) {
-  const designerRef = await addDoc(collection(db, "designers"), {
+  const designerRef = await addDoc(collection(db, "Designers"), {
     ...designerData,
     createdAt: new Date().toUTCString(),
   });
@@ -33,7 +33,7 @@ export async function createDesigner(designerData) {
 
 // Create a new project
 export async function createProject(projectData) {
-  const projectRef = await addDoc(collection(db, "projects"), {
+  const projectRef = await addDoc(collection(db, "Projects"), {
     ...projectData,
     createdAt: new Date().toUTCString(),
   });
@@ -42,7 +42,7 @@ export async function createProject(projectData) {
 
 // Create a new collection
 export async function createCollection(collectionData) {
-  const collectionRef = await addDoc(collection(db, "collections"), {
+  const collectionRef = await addDoc(collection(db, "Collections"), {
     ...collectionData,
     createdAt: new Date().toUTCString(),
   });
@@ -51,7 +51,7 @@ export async function createCollection(collectionData) {
 
 // Create a new product
 export async function createProduct(productData) {
-  const productRef = await addDoc(collection(db, "products"), {
+  const productRef = await addDoc(collection(db, "Products"), {
     ...productData,
     createdAt: new Date().toUTCString(),
   });
@@ -60,8 +60,17 @@ export async function createProduct(productData) {
 
 // Get all projects for a designer
 export async function getAllProjectsForDesigner(designerId) {
-  const projectsRef = collection(db, "projects");
-  const q = query(projectsRef, where("designerId", "==", designerId));
+  const projectsRef = collection(db, "Projects");
+  const q = query(projectsRef, where("DesignerID", "==", designerId));
+  const querySnapshot = await getDocs(q);
+  const projects = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return projects;
+}
+
+// Get user by ID
+export async function getUserByID(email) {
+  const projectsRef = collection(db, "user");
+  const q = query(projectsRef, where("email", "==", email));
   const querySnapshot = await getDocs(q);
   const projects = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return projects;
@@ -69,7 +78,7 @@ export async function getAllProjectsForDesigner(designerId) {
 
 // Get all designers
 export async function getAllDesigners() {
-  const designersRef = collection(db, "designers");
+  const designersRef = collection(db, "Designers");
   const querySnapshot = await getDocs(designersRef);
   const designers = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return designers;
@@ -77,7 +86,7 @@ export async function getAllDesigners() {
 
 // Get all collections
 export async function getAllCollections() {
-  const collectionsRef = collection(db, "collections");
+  const collectionsRef = collection(db, "Collections");
   const querySnapshot = await getDocs(collectionsRef);
   const collections = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return collections;
@@ -85,29 +94,21 @@ export async function getAllCollections() {
 
 // Get all products
 export async function getAllProducts() {
-  const productsRef = collection(db, "products");
+  const productsRef = collection(db, "Products");
   const querySnapshot = await getDocs(productsRef);
-  const products = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  return products;
-}
-
-// Get all products for a designer
-export async function getAllProductsForDesigner(designerId) {
-  const productsRef = collection(db, "products");
-  const q = query(productsRef, where("designerId", "==", designerId));
-  const querySnapshot = await getDocs(q);
   const products = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return products;
 }
 
 // Get all products for a project
 export async function getAllProductsForProject(projectId) {
-  const productsRef = collection(db, "products");
-  const q = query(productsRef, where("projectId", "==", projectId));
+  const productsRef = collection(db, "Products");
+  const q = query(productsRef, where("ProjectID", "==", projectId));
   const querySnapshot = await getDocs(q);
   const products = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   return products;
 }
+
 
 
   
