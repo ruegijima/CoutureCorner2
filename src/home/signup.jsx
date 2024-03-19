@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { auth } from "../firebaseConfig/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { createUser } from "../api";
+import notification from "../components/notification";
 
 export function Signup() {
   const navigate = useNavigate();
@@ -139,8 +141,33 @@ export function Signup() {
 
               createUserWithEmailAndPassword(auth, email, password)
                 .then((user) => {
-                  console.log(user);
-                  navigate("/home");
+                  const userDetails = {
+                    email: user.user.email,
+                  };
+                  createUser(userDetails)
+                    .then((payload) => {
+                      if (!payload) {
+                        notification({
+                          status: "error",
+                          message: "Could not create user",
+                        });
+                        return;
+                      }
+                      localStorage.setItem("userId", payload.id.toString());
+                      notification({
+                        status: "success",
+                        message: "Account created successfully",
+                      });
+                      console.log(user);
+                      navigate("/home");
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      notification({
+                        status: "error",
+                        message: error.message,
+                      });
+                    });
                 })
                 .catch((error) => {
                   document.getElementById("signup-error").innerText =

@@ -1,7 +1,123 @@
 import { useState } from "react";
+import { createDesigner, createProduct, createProject } from "../api";
+import notification from "../components/notification";
+import { useNavigate } from "react-router-dom";
 
 export function DesignerProfileCreate() {
   const [showModal, setShowModal] = useState(false);
+
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [brandname, setBrandname] = useState("");
+  const [facebookURL, setFacebookURL] = useState("");
+  const [instagramURL, setInstagramURL] = useState("");
+  const [philosophy, setPhilosophy] = useState("");
+  const [twitterURL, setTwitterURL] = useState("");
+  const [yearsOfExperience, setYearsOfExperience] = useState("");
+
+  const navigate = useNavigate();
+
+  const [projects, setProjects] = useState([]);
+
+  const saveDesignerProfile = (e) => {
+    e.preventDefault();
+    if (!localStorage.getItem("userId")) {
+      notification({
+        status: "error",
+        message: "Please login to create a profile",
+      });
+      return;
+    }
+    if (projects.length === 0) {
+      notification({
+        status: "error",
+        message: "Please add at least one project",
+      });
+      return;
+    }
+    const body = {
+      name,
+      bio,
+      brandname,
+      facebookURL,
+      instagramURL,
+      philosophy,
+      twitterURL,
+      yearsOfExperience,
+      userId: localStorage.getItem("userId"),
+    };
+
+    createDesigner(body)
+      .then((response) => {
+        if (response) {
+          console.log("Profile created successfully");
+
+          console.log(response?._key?.path?.segments);
+          const designerId = response?._key?.path?.segments[1];
+          localStorage.setItem("designerId", designerId);
+          // create all projects
+          projects.forEach((project) => {
+            console.log("creating project");
+            createProject({
+              ...project,
+              designerId: designerId,
+              products: [],
+            }).then((response) => {
+              console.log(response);
+              if (response) {
+                console.log("Project created successfully");
+                console.log(response?._key?.path?.segments);
+                const projectId = response?._key?.path?.segments[1];
+                // create all products
+                project.products.forEach((product) => {
+                  createProduct({ ...product, projectId }).then((response) => {
+                    console.log(response);
+                    if (response) {
+                      console.log("Product created successfully");
+                      console.log(response?._key?.path?.segments);
+                    } else {
+                      console.log("Could not create product");
+                      notification({
+                        status: "error",
+                        message: "Could not create product",
+                      });
+                    }
+                  });
+                });
+              } else {
+                notification({
+                  status: "error",
+                  message: "Could not create project",
+                });
+                console.log("Could not create project");
+              }
+            });
+          });
+        } else {
+          notification({
+            status: "error",
+            message: "Could not create profile",
+          });
+          console.log("Could not create profile");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        notification({
+          status: "error",
+          message: error.message,
+        });
+      })
+      .finally(() => {
+        console.log("Profile creation completed");
+        notification({
+          status: "success",
+          message: "Designer profile created successfully!",
+        });
+        navigate("/home");
+      });
+  };
+
   return (
     <main>
       <style>
@@ -41,43 +157,54 @@ export function DesignerProfileCreate() {
                   <input
                     type="text"
                     name="designer_name"
-                    placeholder="Designer's Name"
+                    placeholder="Your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    className="w-full rounded border p-2"
                   />
                 </div>
                 <div className="mb-4">
                   <input
                     type="text"
                     name="brand_name"
-                    placeholder="Brand Name"
+                    placeholder="Your Brand Name"
+                    value={brandname}
+                    onChange={(e) => setBrandname(e.target.value)}
                     required
                     className="w-full rounded border p-2"
                   />
                 </div>
                 <div className="mb-4">
                   <textarea
-                    name="philosophy"
-                    placeholder="Design Philosophy"
+                    name="bio"
+                    placeholder="Bio"
                     required
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
                     className="h-24 w-full rounded border p-2"
                   ></textarea>
                 </div>
                 <div className="mb-4">
                   <textarea
-                    name="bio"
-                    placeholder="Bio"
+                    name="philosophy"
+                    placeholder="Your Design Philosophy"
                     required
+                    value={philosophy}
+                    onChange={(e) => setPhilosophy(e.target.value)}
                     className="h-24 w-full rounded border p-2"
                   ></textarea>
                 </div>
+
                 <div className="mb-4">
                   <input
                     type="number"
                     name="years_experience"
                     min="0"
-                    placeholder="Years of Experience"
+                    placeholder="How many years of experience do you have?"
                     required
+                    value={yearsOfExperience}
+                    onChange={(e) => setYearsOfExperience(e.target.value)}
                     className="w-full rounded border p-2"
                   />
                 </div>
@@ -86,6 +213,8 @@ export function DesignerProfileCreate() {
                     type="url"
                     name="instagram_url"
                     placeholder="Instagram URL"
+                    value={instagramURL}
+                    onChange={(e) => setInstagramURL(e.target.value)}
                     className="w-full rounded border p-2"
                   />
                 </div>
@@ -94,6 +223,8 @@ export function DesignerProfileCreate() {
                     type="url"
                     name="twitter_url"
                     placeholder="Twitter URL"
+                    value={twitterURL}
+                    onChange={(e) => setTwitterURL(e.target.value)}
                     className="w-full rounded border p-2"
                   />
                 </div>
@@ -102,6 +233,8 @@ export function DesignerProfileCreate() {
                     type="url"
                     name="facebook_url"
                     placeholder="Facebook URL"
+                    value={facebookURL}
+                    onChange={(e) => setFacebookURL(e.target.value)}
                     className="w-full rounded border p-2"
                   />
                 </div>
@@ -111,40 +244,73 @@ export function DesignerProfileCreate() {
             <div className="mt-4 flex-1 rounded-lg bg-white p-6 shadow-md md:mt-0">
               <h2 className="mb-4 text-2xl font-semibold">Portfolio</h2>
               <div className="space-y-4">
-                <div className="rounded border p-2">
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src="/project1.webp"
-                      alt="Project Image"
-                      className="h-20 w-20 rounded object-cover"
-                    />
-                    <div>
-                      <h3 className="font-semibold">Project Title</h3>
-                      <p className="text-sm text-gray-600">
-                        Project Description
-                      </p>
-                      <p>
-                        Number of Products:{" "}
-                        <span className="font-semibold">3</span>
-                      </p>
-                      <p>
-                        Tags:{" "}
-                        <span className="font-semibold">
-                          Valentine&apos;s, Spring Collection
-                        </span>
-                      </p>
+                {projects.map((project, index) => (
+                  <div
+                    key={index}
+                    className="relative flex flex-col gap-4 rounded border p-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      onClick={() => {
+                        setProjects(
+                          projects.filter((x) => x.title !== project.title)
+                        );
+                      }}
+                      className="lucide lucide-trash-2 absolute right-2 top-2 cursor-pointer text-red-400"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      <line x1="10" x2="10" y1="11" y2="17" />
+                      <line x1="14" x2="14" y1="11" y2="17" />
+                    </svg>
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src="/project1.webp"
+                        alt="Project Image"
+                        className="h-20 w-20 rounded object-cover"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <h3 className="font-semibold">{project.title}</h3>
+                        <p className="text-sm text-gray-600">
+                          {project.description}
+                        </p>
+                        <p>
+                          Number of Products:{" "}
+                          <span className="font-semibold">
+                            {project.products.length}
+                          </span>
+                        </p>
+                        <p>
+                          Tags:{" "}
+                          <span className="font-semibold">
+                            {project.tags.map((x, i) => (
+                              <span key={i}>{x},</span>
+                            ))}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowModal(true);
-                    }}
-                    className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
-                  >
-                    Add New Project
-                  </button>
-                </div>
+                ))}
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowModal(true);
+                  }}
+                  className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
+                >
+                  Add New Project
+                </button>
               </div>
             </div>
           </div>
@@ -152,6 +318,7 @@ export function DesignerProfileCreate() {
           <div className="mt-6 flex justify-center">
             <button
               type="submit"
+              onClick={(e) => saveDesignerProfile(e)}
               className="rounded bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-700"
             >
               Save Profile
@@ -159,13 +326,49 @@ export function DesignerProfileCreate() {
           </div>
         </form>
       </main>
-      {showModal && <AddProject closeModal={() => setShowModal(false)} />}
+      {showModal && (
+        <AddProject
+          closeModal={() => setShowModal(false)}
+          saveProject={(pr) => {
+            setProjects([...projects, pr]);
+          }}
+        />
+      )}
     </main>
   );
 }
 
-function AddProject({ closeModal }) {
+function AddProject({ closeModal, saveProject }) {
   const [showModal, setShowModal] = useState(false);
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState([]);
+
+  const [products, setProducts] = useState([]);
+
+  const createProjectAction = (e) => {
+    e.preventDefault();
+
+    if (products.length === 0) {
+      notification({
+        status: "error",
+        message: "Please add at least one product",
+      });
+      return;
+    }
+
+    const body = {
+      title: name,
+      description,
+      tags,
+      products,
+    };
+
+    saveProject(body);
+    closeModal();
+  };
+
   return (
     <div
       id="addProjectModal"
@@ -186,6 +389,8 @@ function AddProject({ closeModal }) {
             type="text"
             name="project_title"
             required
+            onChange={(e) => setName(e.target.value)}
+            value={name}
             className="w-full rounded border p-2"
           />
         </div>
@@ -194,6 +399,8 @@ function AddProject({ closeModal }) {
           <textarea
             name="project_description"
             required
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
             className="h-24 w-full rounded border p-2"
           ></textarea>
         </div>
@@ -205,6 +412,13 @@ function AddProject({ closeModal }) {
                 type="checkbox"
                 name="tags"
                 value="valentines"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setTags([...tags, e.target.value]);
+                  } else {
+                    setTags(tags.filter((x) => x !== e.target.value));
+                  }
+                }}
                 className="form-checkbox"
               />
               <span className="ml-2">Valentine&apos;s</span>
@@ -214,6 +428,13 @@ function AddProject({ closeModal }) {
                 type="checkbox"
                 name="tags"
                 value="spring"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setTags([...tags, e.target.value]);
+                  } else {
+                    setTags(tags.filter((x) => x !== e.target.value));
+                  }
+                }}
                 className="form-checkbox"
               />
               <span className="ml-2">Spring Collection</span>
@@ -223,6 +444,13 @@ function AddProject({ closeModal }) {
                 type="checkbox"
                 name="tags"
                 value="summer"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setTags([...tags, e.target.value]);
+                  } else {
+                    setTags(tags.filter((x) => x !== e.target.value));
+                  }
+                }}
                 className="form-checkbox"
               />
               <span className="ml-2">Summer Collection</span>
@@ -232,6 +460,13 @@ function AddProject({ closeModal }) {
                 type="checkbox"
                 name="tags"
                 value="winter"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setTags([...tags, e.target.value]);
+                  } else {
+                    setTags(tags.filter((x) => x !== e.target.value));
+                  }
+                }}
                 className="form-checkbox"
               />
               <span className="ml-2">Winter Collection</span>
@@ -241,6 +476,13 @@ function AddProject({ closeModal }) {
                 type="checkbox"
                 name="tags"
                 value="fall"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setTags([...tags, e.target.value]);
+                  } else {
+                    setTags(tags.filter((x) => x !== e.target.value));
+                  }
+                }}
                 className="form-checkbox"
               />
               <span className="ml-2">Fall Collection</span>
@@ -258,36 +500,64 @@ function AddProject({ closeModal }) {
           />
         </div>
 
-        <h3 className="mb-4 text-xl font-semibold">Products</h3>
-        <div id="products-section" className="mb-4">
-          <div className="product mb-4 rounded border p-4">
-            <img
-              src="/Products1.webp"
-              alt="Product Name"
-              className="h-20 w-20 rounded object-cover"
-            />
-            <div>
-              <h4 className="font-semibold">Product Name</h4>
-              <p>Description</p>
-              <p>$Price</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-col items-center space-y-8">
+        <div className="relative mb-4 text-xl font-semibold">
+          Products{" "}
           <button
             id="addProductBtn"
             onClick={() => setShowModal(true)}
-            className="mx-auto rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
+            className="absolute right-0 mx-auto rounded px-4 py-2 font-bold text-green-500 underline"
             style={{
               width: "200px",
             }}
           >
             Add New Product
           </button>
+        </div>
+        <div id="products-section" className="mb-4">
+          {products.map((product, index) => (
+            <div
+              key={index}
+              className="product relative mb-4 rounded border p-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                onClick={() => {
+                  setProducts(products.filter((x) => x.name !== product.name));
+                }}
+                className="lucide lucide-trash-2 absolute right-2 top-2 cursor-pointer text-red-400"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" x2="10" y1="11" y2="17" />
+                <line x1="14" x2="14" y1="11" y2="17" />
+              </svg>
+              <img
+                src="/Products1.webp"
+                alt="Product Name"
+                className="h-20 w-20 rounded object-cover"
+              />
+              <div>
+                <h4 className="font-semibold">{product.name}</h4>
+                <p>{product.description}</p>
+                <p>${product.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
+        <div className="mt-4 flex flex-col items-center space-y-8">
           <button
             type="submit"
+            onClick={(e) => createProjectAction(e)}
             className="mt-10 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
           >
             Create Project
@@ -295,13 +565,36 @@ function AddProject({ closeModal }) {
         </div>
       </div>
       {showModal && (
-        <AddProduct closeProductModal={() => setShowModal(false)} />
+        <AddProduct
+          closeProductModal={() => setShowModal(false)}
+          saveProduct={(body) => {
+            setProducts([...products, body]);
+          }}
+        />
       )}
     </div>
   );
 }
 
-function AddProduct({ closeProductModal }) {
+function AddProduct({ closeProductModal, saveProduct }) {
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+
+  const createProductAction = (e) => {
+    e.preventDefault();
+
+    const body = {
+      name,
+      description,
+      price,
+      categories,
+    };
+
+    saveProduct(body);
+    closeProductModal();
+  };
   return (
     <div
       id="addProductModal"
@@ -325,12 +618,16 @@ function AddProduct({ closeProductModal }) {
               name="product_name"
               placeholder="Product Name"
               required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="mb-4 w-full rounded border p-2"
             />
             <textarea
               name="description"
               placeholder="Description"
               required
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               className="mb-4 w-full rounded border p-2"
             ></textarea>
             <input
@@ -338,6 +635,8 @@ function AddProduct({ closeProductModal }) {
               name="price"
               placeholder="Price"
               required
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               className="mb-4 w-full rounded border p-2"
             />
             <div className="mb-4">
@@ -348,6 +647,15 @@ function AddProduct({ closeProductModal }) {
                     type="checkbox"
                     name="categories"
                     value="new_arrivals"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCategories([...categories, e.target.value]);
+                      } else {
+                        setCategories(
+                          categories.filter((x) => x !== e.target.value)
+                        );
+                      }
+                    }}
                     className="form-checkbox h-5 w-5 text-green-600"
                   />
                   <span className="ml-2">New Arrivals</span>
@@ -357,6 +665,15 @@ function AddProduct({ closeProductModal }) {
                     type="checkbox"
                     name="categories"
                     value="men"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCategories([...categories, e.target.value]);
+                      } else {
+                        setCategories(
+                          categories.filter((x) => x !== e.target.value)
+                        );
+                      }
+                    }}
                     className="form-checkbox h-5 w-5 text-green-600"
                   />
                   <span className="ml-2">Men</span>
@@ -366,6 +683,15 @@ function AddProduct({ closeProductModal }) {
                     type="checkbox"
                     name="categories"
                     value="women"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCategories([...categories, e.target.value]);
+                      } else {
+                        setCategories(
+                          categories.filter((x) => x !== e.target.value)
+                        );
+                      }
+                    }}
                     className="form-checkbox h-5 w-5 text-green-600"
                   />
                   <span className="ml-2">Women</span>
@@ -375,6 +701,15 @@ function AddProduct({ closeProductModal }) {
                     type="checkbox"
                     name="categories"
                     value="jewelry"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setCategories([...categories, e.target.value]);
+                      } else {
+                        setCategories(
+                          categories.filter((x) => x !== e.target.value)
+                        );
+                      }
+                    }}
                     className="form-checkbox h-5 w-5 text-green-600"
                   />
                   <span className="ml-2">Jewelry</span>
@@ -393,6 +728,7 @@ function AddProduct({ closeProductModal }) {
             </div>
             <button
               type="submit"
+              onClick={(e) => createProductAction(e)}
               className="w-full rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
             >
               Create Product

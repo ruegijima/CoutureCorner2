@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getDesignerByUserId, getUserByEmail } from "../api";
+import toast from "../components/notification";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -13,8 +15,40 @@ export const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        console.log(userCredential.user);
-        navigate("/home"); 
+        console.log(userCredential.user.reloadUserInfo.email);
+
+        getUserByEmail(userCredential.user.reloadUserInfo.email)
+          .then((userDetails) => {
+            if (!userDetails) {
+              toast({
+                status: "error",
+                message: "Could not login user",
+              });
+              return;
+            }
+            console.log(userDetails);
+            localStorage.setItem("userId", userDetails[0].id.toString());
+            getDesignerByUserId(userDetails[0].id)
+              .then((designer) => {
+                console.log(designer);
+                localStorage.setItem("designerId", designer[0].id.toString());
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            toast({
+              status: "success",
+              message: "Logged in successfully",
+            });
+            navigate("/home");
+          })
+          .catch((error) => {
+            console.log(error);
+            toast({
+              status: "error",
+              message: error.message,
+            });
+          });
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -94,7 +128,7 @@ export const Login = () => {
           width: 100%; /* Full width to enforce centering */
           margin-bottom: 2rem; /* Space between heading and form */
         }
-    
+
 
         .login-button:hover {
           background-color: #059669; /* Tailwind green-700 for hover */
@@ -121,7 +155,8 @@ export const Login = () => {
         </div>
         <h2>Login</h2>
         <form id="login-form" onSubmit={handleLogin}>
-          <p id="login-error" className="text-red-500"></p> {/* Error message display */}
+          <p id="login-error" className="text-red-500"></p>{" "}
+          {/* Error message display */}
           <div className="form-group">
             <input
               type="email"
@@ -144,7 +179,7 @@ export const Login = () => {
         </form>
         <div className="login-footer">
           <Link to="/forgot-password">Forgotten Password?</Link> |
-          <Link to="/signup">Don't have an account? Sign up</Link>
+          <Link to="/signup">Don&apos;t have an account? Sign up</Link>
         </div>
       </div>
     </main>

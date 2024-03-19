@@ -1,5 +1,23 @@
+import React, { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig/config";
 import { Link } from "react-router-dom";
-export const Shop = () => (
+
+export const Shop = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const productsCollectionRef = collection(db, 'Products'); 
+      const productsSnapshot = await getDocs(productsCollectionRef);
+      const productsList = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(productsList);
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
   <main>
     <div className="bg-white py-4 shadow-md">
       <div className="container mx-auto px-6">
@@ -50,165 +68,36 @@ export const Shop = () => (
       </aside>
 
       <section className="w-3/4 pl-8">
-        <h2 className="mb-6 text-3xl font-semibold">New Arrivals</h2>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg1.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
+          <h2 className="mb-6 text-3xl font-semibold">New Arrivals</h2>
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
+                onClick={() => window.location.href = `/product-details/${product.id}`}
+              >
+                <img
+                  src={"/Products1.webp"} 
+                  alt={product.productName}
+                  className="mb-4 rounded-lg"
+                />
+                <h3 className="text-lg font-semibold">{product.productName}</h3>
+                <p className="text-sm text-gray-600">{product.description}</p>
+                <p className="text-lg text-green-600">${product.price}</p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Add to cart functionality
+                  }}
+                  className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            ))}
           </div>
-
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg2.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg3.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg4.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg4.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg3.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg2.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-          <div
-            className="flex cursor-pointer flex-col items-center rounded-lg bg-white p-4 shadow-lg"
-            onClick="window.location.href='/product-details';"
-          >
-            <img
-              src="/Shopimg1.webp"
-              alt="Product Name"
-              className="mb-4 rounded-lg"
-            />
-            <h3 className="text-lg font-semibold">Product Name</h3>
-            <p className="text-sm text-gray-600">Product Description</p>
-            <p className="text-lg text-green-600">$Price</p>
-            <button
-              onClick="addToCart(); event.stopPropagation();"
-              className="mt-4 rounded bg-green-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-);
+        </section>
+      </div>
+    </main>
+  );
+};

@@ -1,6 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-export const Nav = () => (
-  <nav className="sticky top-0 z-50 bg-white shadow-lg">
+import { useLocation } from "react-router-dom";
+export function Nav () {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDesigner, setIsDesigner] = useState(false);
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const designerId = localStorage.getItem("designerId");
+    if (userId) {
+      setIsLoggedIn(true);
+    }
+    if (designerId) {
+      setIsDesigner(true);
+    }
+    console.log("hello")
+  }, [pathname])
+
+
+  return <nav className="sticky top-0 z-50 bg-white shadow-lg">
     <div className="container mx-auto flex items-center justify-between px-6 py-3">
       <Link to="/" className="flex items-center">
         <img
@@ -44,13 +64,14 @@ export const Nav = () => (
         <Link to="/blog" className="text-gray-600 hover:text-green-600">
           Blog
         </Link>
-        <Link
-          to="/designer-profile-create"
+
+      </div>
+     {!isDesigner && <Link
+          to={isLoggedIn ? "/designer-profile-create" : "/signup"}
           className="rounded-md bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
         >
           Become A Designer
-        </Link>
-      </div>
+        </Link>}
       <div className="flex items-center">
         <Link to="/profile" className="mx-2 text-gray-600 hover:text-green-600">
           <i className="fas fa-user"></i>
@@ -61,4 +82,4 @@ export const Nav = () => (
       </div>
     </div>
   </nav>
-);
+}

@@ -125,7 +125,7 @@ export const Index = () => (
             Showcase your designs and inspire a global clientele on our
             exclusive platform.
           </p>
-          <Link to="/designer-profile-create" className="button">
+          <Link to="/signup" className="button">
             Become A Designer
           </Link>
         </div>

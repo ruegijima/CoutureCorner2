@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Router } from "./general/Router.jsx";
 import { Loading } from "./components/Loading.jsx";
 
+
 export const PageWithHeader = ({ children }) => (
   <div className="flex h-full flex-col">{children}</div>
 );
@@ -16,6 +17,7 @@ export const App = () => (
         </PageWithHeader>
       }
     >
+      
       <Router />
     </Suspense>
   </BrowserRouter>

@@ -1,6 +1,5 @@
-import { collection, addDoc, query, where, getDocs, getDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig/config"; 
-
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebaseConfig/config";
 
 /**
  * Create a new user in the Firestore database.
@@ -12,7 +11,7 @@ export async function createUser(userData) {
     // Add a new document with the user data to the 'users' collection
     const userRef = await addDoc(collection(db, "user"), {
       ...userData,
-      createdAt: new Date().toUTCString() // Add a timestamp for the creation date
+      createdAt: new Date().toUTCString(), // Add a timestamp for the creation date
     });
     console.log("User created with ID: ", userRef.id);
     return userRef; // Return the reference to the newly created document
@@ -63,16 +62,22 @@ export async function getAllProjectsForDesigner(designerId) {
   const projectsRef = collection(db, "Projects");
   const q = query(projectsRef, where("DesignerID", "==", designerId));
   const querySnapshot = await getDocs(q);
-  const projects = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const projects = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return projects;
 }
 
 // Get user by ID
-export async function getUserByID(email) {
+export async function getUserByEmail(email) {
   const projectsRef = collection(db, "user");
   const q = query(projectsRef, where("email", "==", email));
   const querySnapshot = await getDocs(q);
-  const projects = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const projects = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return projects;
 }
 
@@ -80,7 +85,21 @@ export async function getUserByID(email) {
 export async function getAllDesigners() {
   const designersRef = collection(db, "Designers");
   const querySnapshot = await getDocs(designersRef);
-  const designers = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const designers = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  return designers;
+}
+
+export async function getDesignerByUserId(userId) {
+  const designersRef = collection(db, "Designers");
+  const q = query(designersRef, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+  const designers = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return designers;
 }
 
@@ -88,7 +107,10 @@ export async function getAllDesigners() {
 export async function getAllCollections() {
   const collectionsRef = collection(db, "Collections");
   const querySnapshot = await getDocs(collectionsRef);
-  const collections = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const collections = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return collections;
 }
 
@@ -96,7 +118,10 @@ export async function getAllCollections() {
 export async function getAllProducts() {
   const productsRef = collection(db, "Products");
   const querySnapshot = await getDocs(productsRef);
-  const products = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const products = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return products;
 }
 
@@ -105,10 +130,9 @@ export async function getAllProductsForProject(projectId) {
   const productsRef = collection(db, "Products");
   const q = query(productsRef, where("ProjectID", "==", projectId));
   const querySnapshot = await getDocs(q);
-  const products = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const products = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return products;
 }
-
-
-
-  
