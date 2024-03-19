@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { RoutePaths } from "../general/RoutePaths.jsx";
-
 export const ErrorFallback = ({ error, resetErrorBoundary }) => {
   const navigate = useNavigate();
 
@@ -16,14 +15,14 @@ export const ErrorFallback = ({ error, resetErrorBoundary }) => {
       )}
       <div className="mb-4 mt-16 flex w-full flex-col items-center justify-center space-y-16">
         <div>
-          <a
+          <button
             onClick={() => {
               resetErrorBoundary();
               navigate(RoutePaths.HOME);
             }}
           >
             Home
-          </a>
+          </button>
         </div>
         <div>An error happened. Contact support please!</div>
       </div>

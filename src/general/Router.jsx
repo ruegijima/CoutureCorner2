@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 
-import { RoutePaths } from "./RoutePaths.jsx";
 import { Home } from "../home/Home.jsx";
 import { NotFound } from "./NotFound.jsx";
 import { Layout } from "./Layout.jsx";
@@ -23,37 +22,205 @@ import { Project_Detail } from "../home/project-detail.jsx";
 import { Resources } from "../home/resources.jsx";
 import { Signup } from "../home/signup.jsx";
 import { UserProfileCreate } from "../home/userprofilecreate.jsx";
+import { Nav } from "../home/nav.jsx";
+import { Footer } from "../home/footer.jsx";
 
 export const Router = () => (
   <Routes>
     <Route
-      path={RoutePaths.HOME}
+      path={"/home"}
       element={
         <Layout>
+          <Nav />
           <Home />
+          <Footer />
         </Layout>
       }
     />
-    <Route path="/shop" element={ <Shop/>} />
-    <Route path="/about" element={<About/>} />
-    <Route path="/blog" element={<Blog/>} />
-    <Route path="/cart" element={<Cart/>} />
-    <Route path="/community" element={<Community/>} />
-    <Route path="/contact" element={<Contact/>} />
-    <Route path="/designer-dashboard" element={<DesignerDashboard/>} />
-    <Route path="/designer-portfolio" element={<Designerportfolio/>} />
-    <Route path="/designers" element={<Designers/>} />
-    <Route path="/designer-profile-create" element={<DesignerProfileCreate/>} />
-    <Route path="/events" element={<Events/>} />
-    <Route path="/home" element={<Home/>} />
-    <Route path="/index" element={<Index/>} />
-    <Route path="/login" element={<Login/>} />
-    <Route path="/product-details" element={<ProductDetails/>} />
-    <Route path="/profile" element={<Profile/>} />
-    <Route path="/project-detail" element={<Project_Detail/>} />
-    <Route path="/resources" element={<Resources/>} />
-    <Route path="/signup" element={<Signup/>} />
-    <Route path="/user-profile-create" element={<UserProfileCreate/>} />
+    <Route
+      path={"/"}
+      element={
+        <Layout>
+          <Index />
+        </Layout>
+      }
+    />
+    <Route
+      path="/shop"
+      element={
+        <Layout>
+          <Nav />
+          <Shop />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/about"
+      element={
+        <Layout>
+          <Nav />
+          <About />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/blog"
+      element={
+        <Layout>
+          <Nav />
+          <Blog />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/cart"
+      element={
+        <Layout>
+          <Nav />
+          <Cart />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/community"
+      element={
+        <Layout>
+          <Nav />
+          <Community />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/contact"
+      element={
+        <Layout>
+          <Nav />
+          <Contact />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/designer-dashboard"
+      element={
+        <Layout>
+          <Nav />
+          <DesignerDashboard />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/designer-portfolio"
+      element={
+        <Layout>
+          <Nav />
+          <Designerportfolio />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/designers"
+      element={
+        <Layout>
+          <Nav />
+          <Designers />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/designer-profile-create"
+      element={
+        <Layout>
+          <Nav />
+          <DesignerProfileCreate />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/events"
+      element={
+        <Layout>
+          <Nav />
+          <Events />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/login"
+      element={
+        <Layout>
+          <Login />
+        </Layout>
+      }
+    />
+    <Route
+      path="/product-details"
+      element={
+        <Layout>
+          <Nav />
+          <ProductDetails />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/profile"
+      element={
+        <Layout>
+          <Nav />
+          <Profile />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/project-detail"
+      element={
+        <Layout>
+          <Nav />
+          <Project_Detail />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/resources"
+      element={
+        <Layout>
+          <Nav />
+          <Resources />
+          <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/signup"
+      element={
+        <Layout>
+          <Signup />
+        </Layout>
+      }
+    />
+    <Route
+      path="/user-profile-create"
+      element={
+        <Layout>
+          <Nav />
+          <UserProfileCreate />
+          <Footer />
+        </Layout>
+      }
+    />
 
     <Route
       path="*"
