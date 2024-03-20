@@ -164,7 +164,7 @@ export const Router = () => (
       }
     />
     <Route
-      path="/product-details"
+      path="/shop/:productId"
       element={
         <Layout>
           <Nav />

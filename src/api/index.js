@@ -1,4 +1,4 @@
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, getDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig/config";
 
 /**
@@ -135,4 +135,11 @@ export async function getAllProductsForProject(projectId) {
     ...doc.data(),
   }));
   return products;
+}
+
+
+export async function getProductById(productId) {
+ const docRef = doc(db, "Products", productId)
+ const docSnap = await getDoc(docRef)
+ return docSnap.data()
 }
