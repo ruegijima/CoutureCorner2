@@ -3,18 +3,58 @@ import { useParams } from "react-router-dom";
 import { getProductById } from "../api";
 
 export function ProductDetails() {
-  // step 1 - Get the product Id
   const { productId } = useParams();
-const [product, setProduct] = useState()
-  // step 2 - fetch the details of the product using product Id
+  const [product, setProduct] = useState(null);
+  const [showSizeChart, setShowSizeChart] = useState(false);
+  const [cart, setCart] = useState(() => {
+    const localCart = localStorage.getItem("cart");
+    return localCart ? JSON.parse(localCart) : [];
+  });
+
   useEffect(() => {
     const getproductdetails = async () => {
       const response = await getProductById(productId);
-      console.log(response)
-      setProduct(response)
+      console.log(response);
+      setProduct(response);
     };
-    getproductdetails()
+    getproductdetails();
   }, [productId]);
+
+  useEffect(() => {
+    console.log("Updating local storage with cart:", cart);
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+
+    setCart((prevCart) => {
+      const existingProduct = prevCart.find((item) => item.id === product.id);
+
+      if (existingProduct) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prevCart, { ...product, quantity: 1 }];
+      }
+    });
+  };
+
+  if (!product) {
+    return <div>Loading product details...</div>;
+  }
+
+  const handleRemoveFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  const toggleSizeChart = () => {
+    setShowSizeChart(!showSizeChart);
+  };
+
   return (
     <main>
       <div className="container mx-auto my-10 rounded-lg bg-white p-6 shadow-lg">
@@ -28,10 +68,10 @@ const [product, setProduct] = useState()
           </div>
           <div className="p-6 md:flex-1">
             <h1 className="mb-3 text-4xl font-bold">{product?.name}</h1>
-            <p className="mb-5 text-gray-700">
-{product?.description}
+            <p className="mb-5 text-gray-700">{product?.description}</p>
+            <p className="mb-5 text-lg font-semibold text-green-600">
+              ${product?.price}
             </p>
-            <p className="mb-5 text-lg font-semibold text-green-600">${product?.price}</p>
             <div className="mb-5">
               <label
                 htmlFor="size"
@@ -50,7 +90,7 @@ const [product, setProduct] = useState()
                 <option value="large">Extra Large</option>
               </select>
               <button
-                onClick="document.getElementById('sizeChartModal').classList.toggle('hidden')"
+                onClick={toggleSizeChart}
                 className="mb-4 text-sm text-green-600 hover:underline"
               >
                 View Size Chart
@@ -87,16 +127,31 @@ const [product, setProduct] = useState()
                 className="w-full rounded border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500"
               />
             </div>
-            <button className="w-full rounded bg-green-600 px-6 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-700">
+            <button
+              onClick={handleAddToCart}
+              className="w-full rounded bg-green-600 px-6 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-700"
+            >
               Add to Cart
             </button>
+            {/* Optionally, include a remove button if the product is in the cart */}
+            {cart.find((item) => item.id === product.id) && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent the link from being triggered
+                  handleRemoveFromCart(product.id, e);
+                }}
+                className="mt-2 rounded bg-red-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-red-700"
+              >
+                Remove from Cart
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       <div
         id="sizeChartModal"
-        className="fixed inset-0 z-10 hidden overflow-y-auto"
+        className={`fixed inset-0 z-10 ${showSizeChart ? "" : "hidden"} overflow-y-auto`}
       >
         <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -226,13 +281,13 @@ const [product, setProduct] = useState()
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
-              <button
-                onClick="document.getElementById('sizeChartModal').classList.add('hidden')"
-                type="button"
-                className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
-              >
-                Close
-              </button>
+            <button
+              onClick={toggleSizeChart}
+              type="button"
+              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
+            >
+              Close
+            </button>
             </div>
           </div>
         </div>
