@@ -16,6 +16,7 @@ export function DesignerPortfolio() {
 
     const fetchProjects = async () => {
       const projectsResponse = await getAllProjectsForDesigner(designerId);
+      console.log(projectsResponse)
       setProjects(projectsResponse);
     };
 

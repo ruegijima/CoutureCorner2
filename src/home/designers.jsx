@@ -81,9 +81,9 @@ export const Designers = () => {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {designers.map(designer => (
             <div key={designer.id} className="rounded-lg bg-white p-4 shadow-lg">
-              <Link to={`/designer-portfolio/${designer.id}`} className="block">
+              <Link to={`/designers/${designer.id}`} className="block">
                 <img
-                  src={designer.imageUrl || '/portfolio-item-1.webp'} 
+                  src={'/portfolio-item-1.webp'} 
                   alt="Designer Work"
                   className="mb-4 rounded-lg"
                 />
