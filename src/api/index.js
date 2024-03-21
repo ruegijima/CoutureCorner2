@@ -137,9 +137,16 @@ export async function getAllProductsForProject(projectId) {
   return products;
 }
 
-
+// Get product by Id 
 export async function getProductById(productId) {
  const docRef = doc(db, "Products", productId)
  const docSnap = await getDoc(docRef)
  return docSnap.data()
 }
+
+// Get designer by Id 
+export async function getDesignerById(designerId) {
+  const docRef = doc(db, "Designers", designerId)
+  const docSnap = await getDoc(docRef)
+  return docSnap.data()
+ }

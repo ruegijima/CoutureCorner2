@@ -10,7 +10,7 @@ import { Cart } from "../home/cart.jsx";
 import { Community } from "../home/community.jsx";
 import { Contact } from "../home/contact.jsx";
 import { DesignerDashboard } from "../home/DesignerDashboard.jsx";
-import { Designerportfolio } from "../home/designerportfolio.jsx";
+import { DesignerPortfolio } from "../home/designerportfolio.jsx";
 import { Designers } from "../home/designers.jsx";
 import { DesignerProfileCreate } from "../home/DesignersProfileCreate.jsx";
 import { Events } from "../home/events.jsx";
@@ -116,11 +116,11 @@ export const Router = () => (
       }
     />
     <Route
-      path="/designer-portfolio"
+      path="/designers/:designerId"
       element={
         <Layout>
           <Nav />
-          <Designerportfolio />
+          <DesignerPortfolio />
           <Footer />
         </Layout>
       }

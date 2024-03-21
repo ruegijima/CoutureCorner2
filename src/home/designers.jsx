@@ -83,7 +83,7 @@ export const Designers = () => {
             <div key={designer.id} className="rounded-lg bg-white p-4 shadow-lg">
               <Link to={`/designer-portfolio/${designer.id}`} className="block">
                 <img
-                  src={designer.imageUrl || '/portfolio-item-1.webp'} // Use a placeholder if no image is provided
+                  src={designer.imageUrl || '/portfolio-item-1.webp'} 
                   alt="Designer Work"
                   className="mb-4 rounded-lg"
                 />
@@ -127,3 +127,4 @@ export const Designers = () => {
 );
 
 };
+
