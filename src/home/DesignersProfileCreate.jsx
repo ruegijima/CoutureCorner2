@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createDesigner, createProduct, createProject } from "../api";
 import notification from "../components/notification";
 import { useNavigate } from "react-router-dom";
+import { storage } from "../firebaseConfig/config";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { toast } from "react-hot-toast";
 
 export function DesignerProfileCreate() {
   const [showModal, setShowModal] = useState(false);
@@ -19,7 +22,9 @@ export function DesignerProfileCreate() {
 
   const [projects, setProjects] = useState([]);
 
-  const saveDesignerProfile = (e) => {
+  const [designerPic, setDesignerPic] = useState(null);
+
+  const saveDesignerProfile = async (e) => {
     e.preventDefault();
     if (!localStorage.getItem("userId")) {
       notification({
@@ -35,6 +40,18 @@ export function DesignerProfileCreate() {
       });
       return;
     }
+
+    if (!designerPic) {
+      notification({
+        status: "error",
+        message: "Please upload a profile picture",
+      });
+      return;
+    }
+
+    const toastId = toast.loading("Creating designer profile and projects...");
+
+    const fileres = await handleUpload(designerPic);
     const body = {
       name,
       bio,
@@ -44,54 +61,89 @@ export function DesignerProfileCreate() {
       philosophy,
       twitterURL,
       yearsOfExperience,
+      designerPic: fileres,
       userId: localStorage.getItem("userId"),
     };
+
+    let productsDone = 0;
+    const totalProducts = projects.reduce(
+      (acc, project) => acc + project.products.length,
+      0
+    );
 
     createDesigner(body)
       .then((response) => {
         if (response) {
-          console.log("Profile created successfully");
-
-          console.log(response?._key?.path?.segments);
           const designerId = response?._key?.path?.segments[1];
           localStorage.setItem("designerId", designerId);
           // create all projects
-          projects.forEach((project) => {
-            console.log("creating project");
+          projects.forEach(async (project) => {
+            // upload project image
+            const fileres = await handleUpload(project.projectPic);
+            console.log(fileres);
             createProject({
               ...project,
+              projectPic: fileres,
               designerId: designerId,
               products: [],
-            }).then((response) => {
-              console.log(response);
-              if (response) {
-                console.log("Project created successfully");
-                console.log(response?._key?.path?.segments);
-                const projectId = response?._key?.path?.segments[1];
-                // create all products
-                project.products.forEach((product) => {
-                  createProduct({ ...product, projectId }).then((response) => {
-                    console.log(response);
-                    if (response) {
-                      console.log("Product created successfully");
-                      console.log(response?._key?.path?.segments);
-                    } else {
-                      console.log("Could not create product");
-                      notification({
-                        status: "error",
-                        message: "Could not create product",
+            })
+              .then((response) => {
+                console.log(response);
+                if (response) {
+                  const projectId = response?._key?.path?.segments[1];
+                  // create all products
+                  project.products.forEach(async (product) => {
+                    // upload product image
+                    const fileres = await handleUpload(product.productImage);
+                    console.log(fileres);
+                    createProduct({
+                      ...product,
+                      projectId,
+                      productImage: fileres,
+                    })
+                      .then((response) => {
+                        if (response) {
+                          productsDone++;
+
+                          if (productsDone === totalProducts) {
+                            notification({
+                              status: "success",
+                              message: "Designer profile created successfully!",
+                            });
+                            toast.dismiss(toastId);
+                            navigate("/home");
+                          }
+                        } else {
+                          console.log("Could not create product");
+                          notification({
+                            status: "error",
+                            message: "Could not create product",
+                          });
+                        }
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                        notification({
+                          status: "error",
+                          message: error.message,
+                        });
                       });
-                    }
                   });
-                });
-              } else {
+                } else {
+                  notification({
+                    status: "error",
+                    message: "Could not create project",
+                  });
+                  console.log("Could not create project");
+                }
+              })
+              .catch((error) => {
+                console.log(error);
                 notification({
                   status: "error",
-                  message: "Could not create project",
+                  message: error.message,
                 });
-                console.log("Could not create project");
-              }
-            });
+              });
           });
         } else {
           notification({
@@ -107,15 +159,49 @@ export function DesignerProfileCreate() {
           status: "error",
           message: error.message,
         });
-      })
-      .finally(() => {
-        console.log("Profile creation completed");
-        notification({
-          status: "success",
-          message: "Designer profile created successfully!",
-        });
-        navigate("/home");
       });
+  };
+
+  const handleUpload = async (file) => {
+    if (!file) {
+      notification({
+        status: "error",
+        message: "Please select a file to upload",
+      });
+      return;
+    }
+
+    const storageRef = ref(storage, `/files/${file.name}`);
+
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+
+          console.log(`Upload is ${percent}% done`);
+        },
+        (err) => {
+          console.log(err);
+          reject(err);
+        },
+        async () => {
+          try {
+            // Get the download URL
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log(url);
+            resolve(url);
+          } catch (error) {
+            console.log(error);
+            reject(error);
+          }
+        }
+      );
+    });
   };
 
   return (
@@ -144,6 +230,7 @@ export function DesignerProfileCreate() {
                     name="profile_picture"
                     accept="image/*"
                     required
+                    onChange={(e) => setDesignerPic(e.target.files[0])}
                     className="block w-full text-sm text-gray-500
               file:mr-4 file:rounded-full file:border-0
               file:bg-green-50 file:px-4
@@ -318,7 +405,11 @@ export function DesignerProfileCreate() {
           <div className="mt-6 flex justify-center">
             <button
               type="submit"
-              onClick={(e) => saveDesignerProfile(e)}
+              onClick={(e) => {
+                console.log("one");
+                saveDesignerProfile(e);
+                console.log("two");
+              }}
               className="rounded bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-700"
             >
               Save Profile
@@ -347,6 +438,8 @@ function AddProject({ closeModal, saveProject }) {
 
   const [products, setProducts] = useState([]);
 
+  const [projectPic, setProjectPic] = useState(null);
+
   const createProjectAction = (e) => {
     e.preventDefault();
 
@@ -358,11 +451,20 @@ function AddProject({ closeModal, saveProject }) {
       return;
     }
 
+    if (!projectPic) {
+      notification({
+        status: "error",
+        message: "Please select a project image",
+      });
+      return;
+    }
+
     const body = {
       title: name,
       description,
       tags,
       products,
+      projectPic,
     };
 
     saveProject(body);
@@ -383,6 +485,7 @@ function AddProject({ closeModal, saveProject }) {
         </span>
         <h2 className="mb-4 text-2xl font-semibold">Add Project</h2>
         <form id="addProjectForm" />
+
         <div className="mb-4">
           <label className="mb-2 block">Project Title:</label>
           <input
@@ -496,6 +599,7 @@ function AddProject({ closeModal, saveProject }) {
             type="file"
             name="project_image"
             accept="image/*"
+            onChange={(e) => setProjectPic(e.target.files[0])}
             className="w-full rounded border p-2"
           />
         </div>
@@ -582,14 +686,25 @@ function AddProduct({ closeProductModal, saveProduct }) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
 
+  const [productImage, setProductImage] = useState(null);
+
   const createProductAction = (e) => {
     e.preventDefault();
+
+    if (!productImage) {
+      notification({
+        status: "error",
+        message: "Please select a product image",
+      });
+      return;
+    }
 
     const body = {
       name,
       description,
       price,
       categories,
+      productImage,
     };
 
     saveProduct(body);
@@ -723,6 +838,7 @@ function AddProduct({ closeProductModal, saveProduct }) {
                 name="image"
                 accept="image/*"
                 required
+                onChange={(e) => setProductImage(e.target.files[0])}
                 className="w-full rounded border p-2"
               />
             </div>

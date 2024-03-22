@@ -11,6 +11,7 @@ export function ProductDetails() {
     return localCart ? JSON.parse(localCart) : [];
   });
 
+  // step 2 - fetch the details of the product using product Id
   useEffect(() => {
     const getproductdetails = async () => {
       const response = await getProductById(productId);
@@ -61,7 +62,7 @@ export function ProductDetails() {
         <div className="flex flex-wrap md:flex-nowrap">
           <div className="md:flex-1">
             <img
-              src="/Shopimg1.webp"
+              src={product?.productImage ?? "/Shopimg1.webp"}
               alt="Stylish suit jacket with intricate black and white pattern design."
               className="h-full w-full object-contain"
             />

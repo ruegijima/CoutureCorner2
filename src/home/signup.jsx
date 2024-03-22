@@ -97,7 +97,7 @@ export function Signup() {
 
         <form id="signup-form">
           <div className="form-group">
-            <input type="text" placeholder="Full Name" required />
+            <input type="text" placeholder="Full Name" id="name" required />
           </div>
           <div className="form-group">
             <input
@@ -130,6 +130,7 @@ export function Signup() {
 
               const email = document.getElementById("email").value;
               const password = document.getElementById("password").value;
+              const name = document.getElementById("name").value;
               const confirmPassword =
                 document.getElementById("confirm-password").value;
 
@@ -143,6 +144,7 @@ export function Signup() {
                 .then((user) => {
                   const userDetails = {
                     email: user.user.email,
+                    name,
                   };
                   createUser(userDetails)
                     .then((payload) => {
@@ -154,6 +156,7 @@ export function Signup() {
                         return;
                       }
                       localStorage.setItem("userId", payload.id.toString());
+                      localStorage.setItem("userInfo", JSON.stringify(payload));
                       notification({
                         status: "success",
                         message: "Account created successfully",

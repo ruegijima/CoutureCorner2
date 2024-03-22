@@ -27,6 +27,7 @@ export const Login = () => {
               return;
             }
             console.log(userDetails);
+            localStorage.setItem("userInfo", JSON.stringify(userDetails[0]));
             localStorage.setItem("userId", userDetails[0].id.toString());
             getDesignerByUserId(userDetails[0].id)
               .then((designer) => {

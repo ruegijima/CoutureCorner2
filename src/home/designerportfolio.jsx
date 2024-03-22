@@ -16,7 +16,7 @@ export function DesignerPortfolio() {
 
     const fetchProjects = async () => {
       const projectsResponse = await getAllProjectsForDesigner(designerId);
-      console.log(projectsResponse)
+      console.log(projectsResponse);
       setProjects(projectsResponse);
     };
 
@@ -74,7 +74,7 @@ export function DesignerPortfolio() {
       <section className="container mx-auto p-6">
         <div className="overflow-hidden rounded-lg bg-white shadow-lg">
           <img
-            src={designer.heroImage || "/designer-hero-image.webp"} 
+            src={designer?.heroImage || "/designer-hero-image.webp"}
             alt="Designer Portrait"
             className="h-96 w-full object-cover"
           />
@@ -82,7 +82,7 @@ export function DesignerPortfolio() {
             <h2 className="mb-8 text-center text-4xl font-semibold">Profile</h2>
             <div className="text-center">
               <img
-                src={designer.profileImage || "/default-profile-image.webp"} // Use a default image if none is provided
+                src={designer?.designerPic || "/default-profile-image.webp"} // Use a default image if none is provided
                 alt={designer.name}
                 className="mx-auto mb-4 h-32 w-32 rounded-full"
               />
@@ -126,7 +126,7 @@ export function DesignerPortfolio() {
               >
                 <Link to={`/project-detail/${project.id}`} className="block">
                   <img
-                    src={project.imageUrl || "/portfolio-item-2.webp"} 
+                    src={project?.projectPic || "/portfolio-item-2.webp"}
                     alt={project.title}
                     className="mb-4 rounded-lg"
                   />

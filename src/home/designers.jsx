@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebaseConfig/config"; 
+import { db } from "../firebaseConfig/config";
 import { Link } from "react-router-dom";
 
 export const Designers = () => {
@@ -10,7 +10,10 @@ export const Designers = () => {
     const fetchDesigners = async () => {
       const designersCollectionRef = collection(db, "Designers");
       const snapshot = await getDocs(designersCollectionRef);
-      const designersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const designersList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setDesigners(designersList);
     };
 
@@ -76,22 +79,24 @@ export const Designers = () => {
           Designer Portfolios
         </h2>
         <p className="mb-8 text-center text-gray-600">
-          Discover designers for tailor-made creations and collaborative ventures.
+          Discover designers for tailor-made creations and collaborative
+          ventures.
         </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {designers.map(designer => (
-            <div key={designer.id} className="rounded-lg bg-white p-4 shadow-lg">
+          {designers.map((designer) => (
+            <div
+              key={designer.id}
+              className="rounded-lg bg-white p-4 shadow-lg"
+            >
               <Link to={`/designers/${designer.id}`} className="block">
                 <img
-                  src={'/portfolio-item-1.webp'} 
+                  src={designer?.designerPic ?? "/portfolio-item-1.webp"}
                   alt="Designer Work"
-                  className="mb-4 rounded-lg"
+                  className="mb-4 h-auto w-full rounded-lg bg-white"
                 />
                 <h3 className="text-lg font-semibold">{designer.name}</h3>
               </Link>
-              <p className="text-sm text-gray-600">
-                {designer.description}
-              </p>
+              <p className="text-sm text-gray-600">{designer.description}</p>
               <div className="mt-4 flex items-center justify-between">
                 <button className="text-green-600 hover:text-green-800">
                   <i className="far fa-heart"></i> Like
@@ -107,24 +112,26 @@ export const Designers = () => {
           ))}
         </div>
       </section>
-          {/* Collaboration modal code remains unchanged */}
-    <div id="collaborationModal" className="modal">
-      <div className="modal-content">
-        <span className="close">&times;</span>
-        <h2>Request Collaboration</h2>
-        <form>
-          <label htmlFor="designerName">Designer's Name:</label>
-          <input type="text" id="designerName" name="designerName" required />
+      {/* Collaboration modal code remains unchanged */}
+      <div id="collaborationModal" className="modal">
+        <div className="modal-content">
+          <span className="close">&times;</span>
+          <h2>Request Collaboration</h2>
+          <form>
+            <label htmlFor="designerName">Designer&apos;s Name:</label>
+            <input type="text" id="designerName" name="designerName" required />
 
-          <label htmlFor="projectDescription">Project Description:</label>
-          <textarea id="projectDescription" name="projectDescription" required></textarea>
+            <label htmlFor="projectDescription">Project Description:</label>
+            <textarea
+              id="projectDescription"
+              name="projectDescription"
+              required
+            ></textarea>
 
-          <input type="submit" value="Submit Request" />
-        </form>
+            <input type="submit" value="Submit Request" />
+          </form>
+        </div>
       </div>
-    </div>
-  </main>
-);
-
+    </main>
+  );
 };
-
