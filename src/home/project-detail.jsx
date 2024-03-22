@@ -2,22 +2,35 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProjectById, getAllProductsForProject } from "../api"; // Ensure you have these functions properly defined and imported
 
+
 export const ProjectDetail = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const fetchProjectAndProducts = async () => {
-      const projectData = await getProjectById(projectId);
-      setProject(projectData);
-      
-      const productsData = await getAllProductsForProject(projectId);
-      setProducts(productsData);
+    const fetchProjectDetails = async () => {
+      try {
+        // Fetch project details
+        const projectResponse = await getProjectById(projectId);
+        if (projectResponse) {
+          console.log(projectResponse)
+          setProject(projectResponse);
+          
+          // Fetch products for this project
+          const productsResponse = await getAllProductsForProject(projectId);
+          if (productsResponse) {
+            console.log(productsResponse)
+            setProducts(productsResponse);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching project details or products:", error);
+      }
     };
 
-    fetchProjectAndProducts();
-  }, [projectId]);
+    fetchProjectDetails();
+  }, [projectId]); // Re-run the effect if projectId changes
 
   if (!project) {
     return <div>Loading project details...</div>;
@@ -39,8 +52,8 @@ export const ProjectDetail = () => {
             {products.map((product) => (
               <div key={product.id} className="rounded border p-4">
                 <img
-                  src={product.imageUrl} 
-                  alt={product.name}
+                    src={product?.productImage || "/portfolio-item-2.webp"}
+                    alt={product.name}
                   className="mb-4 h-64 w-full rounded object-cover"
                 />
                 <h4 className="text-lg font-semibold">{product.name}</h4>

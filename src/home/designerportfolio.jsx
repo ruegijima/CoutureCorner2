@@ -124,7 +124,7 @@ export function DesignerPortfolio() {
                 key={project.id}
                 className="rounded-lg bg-white p-4 shadow-lg"
               >
-                <Link to={`/designers/${designerId}${project.id}`} className="block">
+                <Link to={`/designers/${designerId}/${project.id}`} className="block">
                   <img
                     src={project?.projectPic || "/portfolio-item-2.webp"}
                     alt={project.title}

@@ -128,7 +128,7 @@ export async function getAllProducts() {
 // Get all products for a project
 export async function getAllProductsForProject(projectId) {
   const productsRef = collection(db, "Products");
-  const q = query(productsRef, where("ProjectID", "==", projectId));
+  const q = query(productsRef, where("projectId", "==", projectId));
   const querySnapshot = await getDocs(q);
   const products = querySnapshot.docs.map((doc) => ({
     id: doc.id,
