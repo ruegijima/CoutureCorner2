@@ -116,9 +116,9 @@ export const Shop = () => {
               >
                 <Link to={`/shop/${product.id}`}>
                   <img
-                    src={"/Products1.webp"}
+                    src={product?.productImage ?? "/Products1.webp"}
                     alt={product.productName}
-                    className="mb-4 rounded-lg"
+                    className="mb-4 h-auto w-full rounded-lg bg-white"
                   />
                   <h3 className="text-lg font-semibold">
                     {product.productName}

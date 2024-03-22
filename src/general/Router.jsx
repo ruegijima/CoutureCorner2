@@ -4,7 +4,7 @@ import { Home } from "../home/Home.jsx";
 import { NotFound } from "./NotFound.jsx";
 import { Layout } from "./Layout.jsx";
 import { Shop } from "../home/shop.jsx";
-import { About } from "../home/about.jsx";
+import {About} from "../home/about.jsx"
 import { Blog } from "../home/blog.jsx";
 import { Cart } from "../home/cart.jsx";
 import { Community } from "../home/community.jsx";

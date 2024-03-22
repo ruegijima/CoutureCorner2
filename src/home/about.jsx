@@ -17,43 +17,24 @@ export const About = () => (
           <div className="mb-8 w-full px-4 lg:mb-0 lg:w-1/2">
             <h2 className="mb-4 text-3xl font-semibold">Our Ethos</h2>
             <p className="mb-4 text-gray-700">
-              CoutureCorner&apos;s ethos is built on three pillars: showcase,
-              educate, and inspire. We are more than a platform for discovery;
-              we are an incubator for growth, providing Zimbabwean designers
-              with the tools, knowledge, and opportunities to evolve their
-              craft. Through workshops, masterclasses, and a wealth of
-              resources, we are committed to nurturing talent and helping
-              designers reach their full potential.{" "}
+            At CoutureCorner, our ethos is to shine a spotlight on Zimbabwean designers and brands that crave visibility and recognition. We provide a launchpad for emerging talents to showcase their work globally, offering them a storefront and a portfolio page to foster growth and collaboration. Our platform is a stepping stone for designers to scale new heights, and when they're ready, to soar independently.
+
             </p>
             <h2 className="mb-4 text-3xl font-semibold">Our Vision</h2>
             <p className="text-gray-700">
-              Our vision extends beyond the runway; it encompasses a future
-              where Zimbabwean designers are as renowned for their
-              entrepreneurial spirit as they are for their creative designs. By
-              fostering professional development through educational programs,
-              we aim to cultivate a wellspring of talent that is equipped to
-              succeed in the global fashion arena{" "}
+            Our vision is to see Zimbabwe's fashion industry burgeon from corner to corner, with local shops brimming with home-grown brands and creations. We envision a world where people everywhere can don the creativity and craftsmanship of Zimbabwe, with CoutureCorner’s platform facilitating international reach and recognition.
+
             </p>
           </div>
           <div className="w-full px-4 lg:w-1/2">
             <h2 className="mb-4 text-3xl font-semibold">Our Story</h2>
             <p className="mb-4 text-gray-700">
-              CoutureCorner was born in 2024 from a fusion of passion for
-              fashion and a vision for upliftment. We didn’t just see garments;
-              we saw potential – for designers to innovate, for brands to
-              flourish, and for the Zimbabwean fashion industry to rise. We
-              stand as a testament to the possibilities that emerge when
-              tradition meets ambition, as we empower designers not only to
-              dream but to achieve.{" "}
+            Born from a passion for fashion and a desire to uplift local talent, CoutureCorner started as a dream to transform Zimbabwe’s fashion landscape. Recognizing the wealth of undiscovered talent, we created a space for designers to innovate, to build their brands, and to share their visions. It's not just about clothing; it’s about stories, identities, and dreams woven into fabric and thread.
             </p>
             <h2 className="mb-4 text-3xl font-semibold">Why Choose Us</h2>
             <p className="text-gray-700">
-              At CoutureCorner, when you collaborate or shop, you&apos;re
-              contributing to a sustainable cycle of growth and education. Each
-              purchase supports not just the designer but the entire ecosystem
-              that enables their development. With access to learning resources
-              and industry expertise, we&apos;re building a community where
-              growth is woven into every thread of our being.{" "}
+            CoutureCorner is more than a marketplace—it’s a world where every purchase endorses local talent and fosters fashion education. By choosing us, you champion the craftsmen behind the label, contributing to the growth of Zimbabwe’s fashion industry. Our platform welcomes international aficionados to the artistry of Zimbabwe, ensuring local masterpieces reach every corner of the globe. Join us in wearing and sharing the pride of Zimbabwe.
+
             </p>
           </div>
         </div>
@@ -67,17 +48,8 @@ export const About = () => (
             Our Mission
           </h2>
           <p className="mx-auto max-w-2xl text-gray-700">
-            CoutureCorner&apos;s mission is to elevate Zimbabwean fashion by
-            connecting gifted designers and their unique creations with a global
-            audience. We strive to be the catalyst for innovation and
-            development in the fashion industry, fostering a thriving community
-            where creativity meets commerce. Through our platform, we provide
-            designers with the exposure they need and the resources they deserve
-            to hone their skills, enhance their visibility, and grow their
-            businesses. By celebrating our culture, empowering our creators, and
-            nurturing talent, we aim to spark a renaissance in Zimbabwean
-            fashion that resonates worldwide, driving economic growth and job
-            creation in the process.{" "}
+          CoutureCorner's mission is to cultivate a fertile ecosystem for Zimbabwean fashion talent to thrive. Through events, masterclasses, workshops, and potentially vibrant discussion boards, we are knitting together a fabric of support that propels local talent onto the international stage. Our commitment is to boost economic growth by elevating the stature of Zimbabwean design globally.
+
           </p>
         </div>
       </div>
@@ -147,43 +119,40 @@ export const About = () => (
         <h2 className="mb-4 text-3xl font-semibold">Our Core Values</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
+            <i className="fas fa-seedling fa-3x mb-4"></i>
+            <h3 className="text-lg font-semibold">Growth &amp; Development</h3>
+            <p>
+            Nurturing home-grown talent and supporting their journey from local artisans to global brands.
+
+            </p>
+          </div>
+          <div>
+            <i className="fas fa-globe fa-3x mb-4"></i>
+            <h3 className="text-lg font-semibold">Global Reach</h3>
+            <p>
+            Expanding the presence of Zimbabwean fashion to the four corners of the world with a commitment to shipping globally.
+
+            </p>
+          </div>
+          <div>
             <i className="fas fa-hands-helping fa-3x mb-4"></i>
-            <h3 className="text-lg font-semibold">Empowerment</h3>
+            <h3 className="text-lg font-semibold">Collaborative Spirit</h3>
             <p>
-              We empower Zimbabwean designers by providing a global stage for
-              their creativity. CoutureCorner is committed to nurturing talent
-              and equipping creatives with the tools and knowledge they need to
-              thrive. Our platform is more than a marketplace; it&apos;s a
-              springboard for innovation and growth in the Zimbabwean fashion
-              scene.
-            </p>
-          </div>
-          <div>
-            <i className="fas fa-award fa-3x mb-4"></i>
-            <h3 className="text-lg font-semibold">Excellence</h3>
-            <p>
-              CoutureCorner stands for excellence in design and craftsmanship.
-              We celebrate the exquisite artistry that Zimbabwean designers
-              bring to the world stage. Our dedication to quality ensures that
-              every piece showcased not only meets but exceeds the highest
-              standards of the fashion industry, reflecting the unique spirit
-              and talent of our community
-            </p>
-          </div>
-          <div>
-            <i className="fas fa-globe-africa fa-3x mb-4"></i>
-            <h3 className="text-lg font-semibold">Cultural Enrichment</h3>
-            <p>
-              Our platform is a tapestry of Zimbabwean culture, woven into the
-              fabric of global fashion. We value the rich heritage and diverse
-              stories that our designers bring to their creations. CoutureCorner
-              is devoted to promoting cultural exchange and appreciation, making
-              the beauty of Zimbabwe&apos;s fashion industry known and
-              accessible to all.
+            Fostering a collaborative spirit with platforms for designers to connect, collaborate, and create.
+
             </p>
           </div>
         </div>
       </div>
+    </section>
+    <section className="bg-green-600 py-10 text-center text-white">
+      <h2 className="text-4xl font-bold">Join Our Journey</h2>
+      <p className="mt-2 text-lg">
+      Embrace global diversity. Celebrate Zimbabwean creativity. Discover your unique style.      </p>
+      {/* CTA Button */}
+      <a href="/shop" className="inline-block mt-6 bg-white text-green-600 py-3 px-8 font-semibold rounded-full hover:bg-gray-100">
+        Explore Collections
+      </a>
     </section>
   </main>
 );

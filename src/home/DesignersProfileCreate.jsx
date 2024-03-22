@@ -12,6 +12,7 @@ export function DesignerProfileCreate() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [brandname, setBrandname] = useState("");
+  const [location, setLocation] = useState("");
   const [facebookURL, setFacebookURL] = useState("");
   const [instagramURL, setInstagramURL] = useState("");
   const [philosophy, setPhilosophy] = useState("");
@@ -56,6 +57,7 @@ export function DesignerProfileCreate() {
       name,
       bio,
       brandname,
+      location,
       facebookURL,
       instagramURL,
       philosophy,
@@ -258,6 +260,17 @@ export function DesignerProfileCreate() {
                     placeholder="Your Brand Name"
                     value={brandname}
                     onChange={(e) => setBrandname(e.target.value)}
+                    required
+                    className="w-full rounded border p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    name="locaten-in"
+                    placeholder="Location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                     required
                     className="w-full rounded border p-2"
                   />
