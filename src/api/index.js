@@ -151,43 +151,11 @@ export async function getDesignerById(designerId) {
   return docSnap.data()
  }
 
- // Add a product to a user's cart
-export async function addProductToCart(userId, product) {
-  const cartRef = doc(db, "carts", userId);
-  try {
-    // Get the current cart data
-    const cartSnap = await getDoc(cartRef);
+ // Get project by Id 
+export async function getProjectById(projectId) {
+  const docRef = doc(db, "Projects", projectId)
+  const docSnap = await getDoc(docRef)
+  return docSnap.data()
+ }
 
-    // If the cart exists, append the new product; if not, create a new cart with the product
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
-      const updatedProducts = [...cartData.products, product];
-      await setDoc(cartRef, { products: updatedProducts }, { merge: true });
-    } else {
-      await setDoc(cartRef, { products: [product] });
-    }
-
-    console.log("Product added to cart");
-  } catch (error) {
-    console.error("Error adding product to cart: ", error);
-    throw error;
-  }
-}
-
-// Remove a product from a user's cart
-export async function removeProductFromCart(userId, productId) {
-  const cartRef = doc(db, "carts", userId);
-  try {
-    // Get the current cart data
-    const cartSnap = await getDoc(cartRef);
-    if (cartSnap.exists()) {
-      const cartData = cartSnap.data();
-      const updatedProducts = cartData.products.filter(p => p.id !== productId);
-      await setDoc(cartRef, { products: updatedProducts }, { merge: true });
-    }
-    console.log("Product removed from cart");
-  } catch (error) {
-    console.error("Error removing product from cart: ", error);
-    throw error;
-  }
-}
+ 

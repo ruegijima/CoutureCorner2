@@ -18,7 +18,7 @@ import { Index } from "../home/index.jsx";
 import { Login } from "../home/login.jsx";
 import { ProductDetails } from "../home/productdetails.jsx";
 import { Profile } from "../home/profile.jsx";
-import { Project_Detail } from "../home/project-detail.jsx";
+import { ProjectDetail } from "../home/project-detail.jsx";
 import { Resources } from "../home/resources.jsx";
 import { Signup } from "../home/signup.jsx";
 import { UserProfileCreate } from "../home/userprofilecreate.jsx";
@@ -184,11 +184,11 @@ export const Router = () => (
       }
     />
     <Route
-      path="/project-detail"
+      path="/designers/:designerId/:projectId"
       element={
         <Layout>
           <Nav />
-          <Project_Detail />
+          <ProjectDetail />
           <Footer />
         </Layout>
       }
