@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDeferredValue } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig/config";
 import { Link } from "react-router-dom";
@@ -6,19 +6,33 @@ import { Link } from "react-router-dom";
 export const Designers = () => {
   const [designers, setDesigners] = useState([]);
 
-  useEffect(() => {
-    const fetchDesigners = async () => {
-      const designersCollectionRef = collection(db, "Designers");
-      const snapshot = await getDocs(designersCollectionRef);
-      const designersList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setDesigners(designersList);
-    };
+  const fetchDesigners = async () => {
+    const designersCollectionRef = collection(db, "Designers");
+    const snapshot = await getDocs(designersCollectionRef);
+    const designersList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setDesigners(designersList);
+  };
 
+  useEffect(() => {
     fetchDesigners();
   }, []);
+
+  const [searchValue, setSearchValue] = useState("");
+  const deferredVal = useDeferredValue(searchValue);
+
+  useEffect(() => {
+    if (deferredVal?.length > 0) {
+      const filteredDesigners = designers.filter((designer) =>
+        designer.name.toLowerCase().includes(deferredVal.toLowerCase())
+      );
+      setDesigners(filteredDesigners);
+    } else {
+      fetchDesigners();
+    }
+  }, [deferredVal]);
 
   return (
     <main>
@@ -65,7 +79,9 @@ export const Designers = () => {
           <div className="relative">
             <input
               type="search"
-              placeholder="Search..."
+              placeholder="Search designers..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
               className="w-full rounded-full border px-4 py-2 text-gray-700 focus:outline-none"
             />
             <button className="absolute right-0 top-0 mr-4 mt-3">

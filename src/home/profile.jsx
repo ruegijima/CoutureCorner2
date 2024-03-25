@@ -4,10 +4,22 @@ import { useNavigate } from "react-router-dom";
 export const Profile = () => {
   const [user, setUser] = useState(null);
 
+  const [isDesigner, setIsDesigner] = useState(null);
+
   useEffect(() => {
     const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
       setUser(JSON.parse(userInfo));
+    }
+  }, []);
+
+  useEffect(() => {
+    const designerId = localStorage.getItem("designerId");
+
+    if (designerId) {
+      setIsDesigner(true);
+    } else {
+      setIsDesigner(false);
     }
   }, []);
 
@@ -18,7 +30,7 @@ export const Profile = () => {
     <main>
       <section className="container mx-auto p-6">
         <div className="overflow-hidden rounded-lg bg-white shadow">
-          <div className="justify-between p-6 md:flex">
+          <div className="justify-start p-6 md:flex">
             <div className="border-r border-green-200 p-4 md:w-1/3">
               <h3 className="mb-3 text-lg font-semibold text-green-600">
                 My Profile
@@ -40,26 +52,24 @@ export const Profile = () => {
               </button>
             </div>
 
-            <div className="border-r border-green-200 p-4 md:w-1/3">
-              <h3 className="mb-3 text-lg font-semibold text-green-600">
-                My Collections
-              </h3>
-
-              <p>
-                <i className="far fa-heart text-green-500"></i> Summer
-                Collection
-              </p>
-              <p>
-                <i className="far fa-bookmark text-green-500"></i> Winter
-                Collection
-              </p>
-              <Link
-                to="/collections"
-                className="mt-4 block rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-700"
+            {isDesigner === true && (
+              <div
+                className={`border-r border-green-200 p-4 md:w-1/3 ${
+                  isDesigner ? "opacity-100" : "opacity-0"
+                }`}
               >
-                View Collections
-              </Link>
-            </div>
+                <h3 className="mb-3 text-lg font-semibold text-green-600">
+                  Profile
+                </h3>
+
+                <Link
+                  to="/dashboard"
+                  className="mt-4 block rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-700"
+                >
+                  Dashboard
+                </Link>
+              </div>
+            )}
 
             <div className="p-4 md:w-1/3">
               <h3 className="mb-3 text-lg font-semibold text-green-600">
@@ -68,21 +78,25 @@ export const Profile = () => {
               <p>
                 <strong>Recent Order:</strong> #00123
               </p>
-              <p>
-                <strong>Collaboration:</strong> In Progress
-              </p>
+              {isDesigner && (
+                <p>
+                  <strong>Collaboration:</strong> In Progress
+                </p>
+              )}
               <Link
                 to="/orders"
                 className="mt-4 block rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-700"
               >
                 Order History
               </Link>
-              <Link
-                to="/collaborations"
-                className="mt-4 block rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-700"
-              >
-                Collaboration Statuses
-              </Link>
+              {isDesigner && (
+                <Link
+                  to="/collaborations"
+                  className="mt-4 block rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-700"
+                >
+                  Collaboration Statuses
+                </Link>
+              )}
             </div>
           </div>
         </div>

@@ -1,12 +1,64 @@
-import { useState } from "react";
-import { createDesigner, createProduct, createProject } from "../api";
+import { useEffect, useState } from "react";
+import {
+  createDesigner,
+  createProduct,
+  createProject,
+  deleteProduct,
+  editDesigner,
+  editProduct,
+  editProject,
+  getAllProductsForProject,
+  getDesignerById,
+} from "../api";
 import notification from "../components/notification";
 import { useNavigate } from "react-router-dom";
 import { storage } from "../firebaseConfig/config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast } from "react-hot-toast";
 
-export function DesignerProfileCreate() {
+export const handleUpload = async (file) => {
+  if (!file) {
+    notification({
+      status: "error",
+      message: "Please select a file to upload",
+    });
+    return;
+  }
+
+  const storageRef = ref(storage, `/files/${file.name}`);
+
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percent = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+
+        console.log(`Upload is ${percent}% done`);
+      },
+      (err) => {
+        console.log(err);
+        reject(err);
+      },
+      async () => {
+        try {
+          // Get the download URL
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log(url);
+          resolve(url);
+        } catch (error) {
+          console.log(error);
+          reject(error);
+        }
+      }
+    );
+  });
+};
+
+export function DesignerProfileCreate({ fromEdit }) {
   const [showModal, setShowModal] = useState(false);
 
   const [name, setName] = useState("");
@@ -163,48 +215,66 @@ export function DesignerProfileCreate() {
         });
       });
   };
+  const [existingUrl, setExistingUrl] = useState("");
+  const fetchDesignerDetails = async (x) => {
+    const designerResponse = await getDesignerById(x);
+    setName(designerResponse.name);
+    setBio(designerResponse.bio);
+    setBrandname(designerResponse.brandname);
+    setLocation(designerResponse.location);
+    setFacebookURL(designerResponse.facebookURL);
+    setInstagramURL(designerResponse.instagramURL);
+    setPhilosophy(designerResponse.philosophy);
+    setTwitterURL(designerResponse.twitterURL);
+    setYearsOfExperience(designerResponse.yearsOfExperience);
+    setExistingUrl(designerResponse.designerPic);
+  };
 
-  const handleUpload = async (file) => {
-    if (!file) {
+  const editDesignerPortfolio = async (e) => {
+    try {
+      e.preventDefault();
+      let url = existingUrl;
+
+      if (designerPic) {
+        url = await handleUpload(designerPic);
+      }
+
+      const editBody = {
+        name,
+        bio,
+        brandname,
+        location,
+        facebookURL,
+        instagramURL,
+        philosophy,
+        twitterURL,
+        yearsOfExperience,
+        designerPic: url,
+      };
+
+      const res = await editDesigner(
+        localStorage.getItem("designerId"),
+        editBody
+      );
+      console.log(res);
+      notification({
+        status: "success",
+        message: "Designer profile updated successfully",
+      });
+    } catch (error) {
+      console.log(error);
       notification({
         status: "error",
-        message: "Please select a file to upload",
+        message: error.message,
       });
-      return;
     }
-
-    const storageRef = ref(storage, `/files/${file.name}`);
-
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const percent = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-
-          console.log(`Upload is ${percent}% done`);
-        },
-        (err) => {
-          console.log(err);
-          reject(err);
-        },
-        async () => {
-          try {
-            // Get the download URL
-            const url = await getDownloadURL(uploadTask.snapshot.ref);
-            console.log(url);
-            resolve(url);
-          } catch (error) {
-            console.log(error);
-            reject(error);
-          }
-        }
-      );
-    });
   };
+
+  useEffect(() => {
+    const id = localStorage.getItem("designerId");
+    if (!id) return;
+    fetchDesignerDetails(id);
+  }, [fromEdit]);
 
   return (
     <main>
@@ -223,24 +293,60 @@ export function DesignerProfileCreate() {
             <div className="flex-1 rounded-lg bg-white p-6 shadow-md">
               <h2 className="mb-4 text-2xl font-semibold">Brand Details</h2>
               <div className="space-y-4">
-                <div>
+                <div className="relative w-[300px]">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Profile Picture Upload:
                   </label>
-                  <input
-                    type="file"
-                    name="profile_picture"
-                    accept="image/*"
-                    required
-                    onChange={(e) => setDesignerPic(e.target.files[0])}
-                    className="block w-full text-sm text-gray-500
+                  <div className="flex items-center">
+                    {existingUrl ? (
+                      <div>
+                        <img
+                          src={existingUrl}
+                          alt="Designer Profile"
+                          className="h-20 w-20 rounded object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <input
+                        type="file"
+                        name="profile_picture"
+                        accept="image/*"
+                        required
+                        onChange={(e) => setDesignerPic(e.target.files[0])}
+                        className="block w-full text-sm text-gray-500
               file:mr-4 file:rounded-full file:border-0
               file:bg-green-50 file:px-4
               file:py-2 file:text-sm
               file:font-semibold file:text-green-700
               hover:file:bg-green-100
             "
-                  />
+                      />
+                    )}
+                    {(existingUrl || designerPic) && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-trash-2 cursor-pointer text-red-600"
+                        onClick={() => {
+                          setDesignerPic(null);
+                          setExistingUrl("");
+                        }}
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        <line x1="10" x2="10" y1="11" y2="17" />
+                        <line x1="14" x2="14" y1="11" y2="17" />
+                      </svg>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <input
@@ -341,91 +447,91 @@ export function DesignerProfileCreate() {
               </div>
             </div>
 
-            <div className="mt-4 flex-1 rounded-lg bg-white p-6 shadow-md md:mt-0">
-              <h2 className="mb-4 text-2xl font-semibold">Portfolio</h2>
-              <div className="space-y-4">
-                {projects.map((project, index) => (
-                  <div
-                    key={index}
-                    className="relative flex flex-col gap-4 rounded border p-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      onClick={() => {
-                        setProjects(
-                          projects.filter((x) => x.title !== project.title)
-                        );
-                      }}
-                      className="lucide lucide-trash-2 absolute right-2 top-2 cursor-pointer text-red-400"
+            {!fromEdit && (
+              <div className="mt-4 flex-1 rounded-lg bg-white p-6 shadow-md md:mt-0">
+                <h2 className="mb-4 text-2xl font-semibold">Portfolio</h2>
+                <div className="space-y-4">
+                  {projects.map((project, index) => (
+                    <div
+                      key={index}
+                      className="relative flex flex-col gap-4 rounded border p-2"
                     >
-                      <path d="M3 6h18" />
-                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      <line x1="10" x2="10" y1="11" y2="17" />
-                      <line x1="14" x2="14" y1="11" y2="17" />
-                    </svg>
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src="/project1.webp"
-                        alt="Project Image"
-                        className="h-20 w-20 rounded object-cover"
-                      />
-                      <div className="flex flex-col gap-1">
-                        <h3 className="font-semibold">{project.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          {project.description}
-                        </p>
-                        <p>
-                          Number of Products:{" "}
-                          <span className="font-semibold">
-                            {project.products.length}
-                          </span>
-                        </p>
-                        <p>
-                          Tags:{" "}
-                          <span className="font-semibold">
-                            {project.tags.map((x, i) => (
-                              <span key={i}>{x},</span>
-                            ))}
-                          </span>
-                        </p>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        onClick={() => {
+                          setProjects(
+                            projects.filter((x) => x.title !== project.title)
+                          );
+                        }}
+                        className="lucide lucide-trash-2 absolute right-2 top-2 cursor-pointer text-red-400"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        <line x1="10" x2="10" y1="11" y2="17" />
+                        <line x1="14" x2="14" y1="11" y2="17" />
+                      </svg>
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src="/project1.webp"
+                          alt="Project Image"
+                          className="h-20 w-20 rounded object-cover"
+                        />
+                        <div className="flex flex-col gap-1">
+                          <h3 className="font-semibold">{project.title}</h3>
+                          <p className="text-sm text-gray-600">
+                            {project.description}
+                          </p>
+                          <p>
+                            Number of Products:{" "}
+                            <span className="font-semibold">
+                              {project.products.length}
+                            </span>
+                          </p>
+                          <p>
+                            Tags:{" "}
+                            <span className="font-semibold">
+                              {project.tags.map((x, i) => (
+                                <span key={i}>{x},</span>
+                              ))}
+                            </span>
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowModal(true);
-                  }}
-                  className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
-                >
-                  Add New Project
-                </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowModal(true);
+                    }}
+                    className="rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
+                  >
+                    Add New Project
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="mt-6 flex justify-center">
             <button
               type="submit"
               onClick={(e) => {
-                console.log("one");
-                saveDesignerProfile(e);
-                console.log("two");
+                fromEdit ? editDesignerPortfolio(e) : saveDesignerProfile(e);
               }}
               className="rounded bg-green-500 px-6 py-2 font-bold text-white hover:bg-green-700"
             >
-              Save Profile
+              {fromEdit ? "Save Changes" : "Save Profile"}
             </button>
           </div>
         </form>
@@ -435,6 +541,7 @@ export function DesignerProfileCreate() {
           closeModal={() => setShowModal(false)}
           saveProject={(pr) => {
             setProjects([...projects, pr]);
+            setShowModal(false);
           }}
         />
       )}
@@ -442,8 +549,9 @@ export function DesignerProfileCreate() {
   );
 }
 
-function AddProject({ closeModal, saveProject }) {
+export function AddProject({ closeModal, saveProject, isEdit }) {
   const [showModal, setShowModal] = useState(false);
+  const [productInView, setProductInView] = useState(null);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -481,7 +589,71 @@ function AddProject({ closeModal, saveProject }) {
     };
 
     saveProject(body);
-    closeModal();
+    // closeModal();
+  };
+
+  const editProjectAction = async (e) => {
+    e.preventDefault();
+
+    try {
+      let newProjectPicUrl = isEdit.projectPic;
+
+      if (projectPic) {
+        newProjectPicUrl = await handleUpload(projectPic);
+      }
+
+      const editBody = {
+        title: name,
+        description,
+        tags,
+        // products,
+        projectPic: newProjectPicUrl,
+      };
+
+      const resp = await editProject(isEdit.id, editBody);
+      console.log(resp);
+      notification({
+        status: "success",
+        message: "Project updated successfully",
+      });
+      closeModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isEdit) {
+      setName(isEdit.title);
+      setDescription(isEdit.description);
+      setTags(isEdit.tags);
+    }
+  }, [isEdit]);
+
+  const fetchProjectDetails = async (x) => {
+    try {
+      const productsResponse = await getAllProductsForProject(x.id);
+      if (productsResponse) {
+        setProducts(productsResponse);
+      }
+    } catch (error) {
+      console.error("Error fetching project details or products:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isEdit) return;
+
+    fetchProjectDetails(isEdit);
+  }, [isEdit]);
+
+  const deleteProductAction = async (productId) => {
+    await deleteProduct(productId);
+    notification({
+      status: "success",
+      message: "Product deleted successfully!",
+    });
+    await fetchProjectDetails(isEdit);
   };
 
   return (
@@ -528,6 +700,7 @@ function AddProject({ closeModal, saveProject }) {
                 type="checkbox"
                 name="tags"
                 value="valentines"
+                checked={tags.includes("valentines")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -544,6 +717,7 @@ function AddProject({ closeModal, saveProject }) {
                 type="checkbox"
                 name="tags"
                 value="spring"
+                checked={tags.includes("spring")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -560,6 +734,7 @@ function AddProject({ closeModal, saveProject }) {
                 type="checkbox"
                 name="tags"
                 value="summer"
+                checked={tags.includes("summer")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -576,6 +751,7 @@ function AddProject({ closeModal, saveProject }) {
                 type="checkbox"
                 name="tags"
                 value="winter"
+                checked={tags.includes("winter")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -592,6 +768,7 @@ function AddProject({ closeModal, saveProject }) {
                 type="checkbox"
                 name="tags"
                 value="fall"
+                checked={tags.includes("fall")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -630,7 +807,10 @@ function AddProject({ closeModal, saveProject }) {
             Add New Product
           </button>
         </div>
-        <div id="products-section" className="mb-4">
+        <div
+          id="products-section"
+          className="mb-4 max-h-[300px] overflow-y-auto"
+        >
           {products.map((product, index) => (
             <div
               key={index}
@@ -647,7 +827,11 @@ function AddProject({ closeModal, saveProject }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 onClick={() => {
-                  setProducts(products.filter((x) => x.name !== product.name));
+                  isEdit
+                    ? deleteProductAction(product.id)
+                    : setProducts(
+                        products.filter((x) => x.name !== product.name)
+                      );
                 }}
                 className="lucide lucide-trash-2 absolute right-2 top-2 cursor-pointer text-red-400"
               >
@@ -656,6 +840,25 @@ function AddProject({ closeModal, saveProject }) {
                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                 <line x1="10" x2="10" y1="11" y2="17" />
                 <line x1="14" x2="14" y1="11" y2="17" />
+              </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                onClick={() => {
+                  setProductInView(product);
+                  setShowModal(true);
+                }}
+                className="lucide lucide-pencil  absolute right-2 top-16 cursor-pointer text-gray-400"
+              >
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                <path d="m15 5 4 4" />
               </svg>
               <img
                 src="/Products1.webp"
@@ -674,26 +877,40 @@ function AddProject({ closeModal, saveProject }) {
         <div className="mt-4 flex flex-col items-center space-y-8">
           <button
             type="submit"
-            onClick={(e) => createProjectAction(e)}
+            onClick={(e) =>
+              isEdit ? editProjectAction(e) : createProjectAction(e)
+            }
             className="mt-10 rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
           >
-            Create Project
+            {isEdit ? "Save Changes" : "Create Project"}
           </button>
         </div>
       </div>
       {showModal && (
         <AddProduct
-          closeProductModal={() => setShowModal(false)}
+          closeProductModal={async () => {
+            if (isEdit) {
+              await fetchProjectDetails(isEdit);
+            }
+            setShowModal(false);
+          }}
           saveProduct={(body) => {
             setProducts([...products, body]);
           }}
+          toEdit={productInView}
+          projectId={isEdit?.id}
         />
       )}
     </div>
   );
 }
 
-function AddProduct({ closeProductModal, saveProduct }) {
+export function AddProduct({
+  closeProductModal,
+  saveProduct,
+  toEdit,
+  projectId,
+}) {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -704,6 +921,10 @@ function AddProduct({ closeProductModal, saveProduct }) {
   const createProductAction = (e) => {
     e.preventDefault();
 
+    if (projectId) {
+      createNewProduct(e);
+      return;
+    }
     if (!productImage) {
       notification({
         status: "error",
@@ -723,6 +944,80 @@ function AddProduct({ closeProductModal, saveProduct }) {
     saveProduct(body);
     closeProductModal();
   };
+
+  const editProductAction = async (e) => {
+    e.preventDefault();
+
+    try {
+      let newProductImageUrl = toEdit.productImage;
+
+      if (productImage) {
+        newProductImageUrl = await handleUpload(productImage);
+      }
+
+      const editBody = {
+        name,
+        description,
+        price,
+        categories,
+        productImage: newProductImageUrl,
+      };
+
+      console.log(editBody);
+      const res = await editProduct(toEdit.id, editBody);
+      console.log(res);
+      notification({
+        status: "success",
+        message: "Product updated successfully",
+      });
+      closeProductModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (toEdit) {
+      setName(toEdit.name);
+      setDescription(toEdit.description);
+      setPrice(toEdit.price);
+      setCategories(toEdit.categories);
+    }
+  }, [toEdit]);
+
+  const createNewProduct = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (!productImage) {
+        notification({
+          status: "error",
+          message: "Please select a product image",
+        });
+        return;
+      }
+
+      const url = await handleUpload(productImage);
+      const body = {
+        name,
+        description,
+        price,
+        categories,
+        productImage: url,
+        projectId,
+      };
+      const res = await createProduct(body);
+      console.log(res);
+      notification({
+        status: "success",
+        message: "Product created successfully",
+      });
+      closeProductModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       id="addProductModal"
@@ -775,6 +1070,7 @@ function AddProduct({ closeProductModal, saveProduct }) {
                     type="checkbox"
                     name="categories"
                     value="new_arrivals"
+                    checked={categories.includes("new_arrivals")}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setCategories([...categories, e.target.value]);
@@ -793,6 +1089,7 @@ function AddProduct({ closeProductModal, saveProduct }) {
                     type="checkbox"
                     name="categories"
                     value="men"
+                    checked={categories.includes("men")}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setCategories([...categories, e.target.value]);
@@ -811,6 +1108,7 @@ function AddProduct({ closeProductModal, saveProduct }) {
                     type="checkbox"
                     name="categories"
                     value="women"
+                    checked={categories.includes("women")}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setCategories([...categories, e.target.value]);
@@ -829,6 +1127,7 @@ function AddProduct({ closeProductModal, saveProduct }) {
                     type="checkbox"
                     name="categories"
                     value="jewelry"
+                    checked={categories.includes("jewelry")}
                     onChange={(e) => {
                       if (e.target.checked) {
                         setCategories([...categories, e.target.value]);
@@ -857,10 +1156,12 @@ function AddProduct({ closeProductModal, saveProduct }) {
             </div>
             <button
               type="submit"
-              onClick={(e) => createProductAction(e)}
+              onClick={(e) =>
+                toEdit ? editProductAction(e) : createProductAction(e)
+              }
               className="w-full rounded bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-700"
             >
-              Create Product
+              {toEdit ? "Save Changes" : "Create Product"}
             </button>
           </form>
         </div>

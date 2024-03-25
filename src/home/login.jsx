@@ -15,7 +15,6 @@ export const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        console.log(userCredential.user.reloadUserInfo.email);
 
         getUserByEmail(userCredential.user.reloadUserInfo.email)
           .then((userDetails) => {
@@ -26,7 +25,6 @@ export const Login = () => {
               });
               return;
             }
-            console.log(userDetails);
             localStorage.setItem("userInfo", JSON.stringify(userDetails[0]));
             localStorage.setItem("userId", userDetails[0].id.toString());
             getDesignerByUserId(userDetails[0].id)

@@ -15,14 +15,12 @@ export function ProductDetails() {
   useEffect(() => {
     const getproductdetails = async () => {
       const response = await getProductById(productId);
-      console.log(response);
       setProduct(response);
     };
     getproductdetails();
   }, [productId]);
 
   useEffect(() => {
-    console.log("Updating local storage with cart:", cart);
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
@@ -56,6 +54,8 @@ export function ProductDetails() {
     setShowSizeChart(!showSizeChart);
   };
 
+  console.log(cart);
+
   return (
     <main>
       <div className="container mx-auto my-10 rounded-lg bg-white p-6 shadow-lg">
@@ -67,7 +67,7 @@ export function ProductDetails() {
               className="h-full w-full object-contain"
             />
           </div>
-          <div className="p-6 md:flex-1">
+          <div className="p-6 pt-0 md:flex-1">
             <h1 className="mb-3 text-4xl font-bold">{product?.name}</h1>
             <p className="mb-5 text-gray-700">{product?.description}</p>
             <p className="mb-5 text-lg font-semibold text-green-600">
@@ -128,22 +128,24 @@ export function ProductDetails() {
                 className="w-full rounded border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500"
               />
             </div>
-            <button
-              onClick={handleAddToCart}
-              className="w-full rounded bg-green-600 px-6 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-700"
-            >
-              Add to Cart
-            </button>
+
             {/* Optionally, include a remove button if the product is in the cart */}
-            {cart.find((item) => item.id === product.id) && (
+            {cart.find((item) => item.id === productId) ? (
               <button
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent the link from being triggered
-                  handleRemoveFromCart(product.id, e);
+                  handleRemoveFromCart(productId, e);
                 }}
                 className="mt-2 rounded bg-red-600 px-4 py-2 font-bold text-white transition duration-300 hover:bg-red-700"
               >
                 Remove from Cart
+              </button>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                className="w-full rounded bg-green-600 px-6 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-700"
+              >
+                Add to Cart
               </button>
             )}
           </div>
@@ -152,7 +154,9 @@ export function ProductDetails() {
 
       <div
         id="sizeChartModal"
-        className={`fixed inset-0 z-10 ${showSizeChart ? "" : "hidden"} overflow-y-auto`}
+        className={`fixed inset-0 z-10 pt-16 ${
+          showSizeChart ? "" : "hidden"
+        } overflow-y-auto`}
       >
         <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
           <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -282,13 +286,13 @@ export function ProductDetails() {
               </div>
             </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
-            <button
-              onClick={toggleSizeChart}
-              type="button"
-              className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
-            >
-              Close
-            </button>
+              <button
+                onClick={toggleSizeChart}
+                type="button"
+                className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

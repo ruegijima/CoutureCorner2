@@ -1,4 +1,14 @@
-import { collection, addDoc, query, where, getDocs, getDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig/config";
 
 /**
@@ -137,25 +147,53 @@ export async function getAllProductsForProject(projectId) {
   return products;
 }
 
-// Get product by Id 
+// Get product by Id
 export async function getProductById(productId) {
- const docRef = doc(db, "Products", productId)
- const docSnap = await getDoc(docRef)
- return docSnap.data()
+  const docRef = doc(db, "Products", productId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
 }
 
-// Get designer by Id 
+// edit a project
+export async function editProject(projectId, projectData) {
+  const docRef = doc(db, "Projects", projectId);
+  await updateDoc(docRef, projectData);
+}
+
+// delete a project
+export async function deleteProject(projectId) {
+  const docRef = doc(db, "Projects", projectId);
+  await deleteDoc(docRef);
+}
+
+// edit a product
+export async function editProduct(productId, productData) {
+  const docRef = doc(db, "Products", productId);
+  await updateDoc(docRef, productData);
+}
+
+// delete a product
+export async function deleteProduct(productId) {
+  const docRef = doc(db, "Products", productId);
+  await deleteDoc(docRef);
+}
+
+// Get designer by Id
 export async function getDesignerById(designerId) {
-  const docRef = doc(db, "Designers", designerId)
-  const docSnap = await getDoc(docRef)
-  return docSnap.data()
- }
+  const docRef = doc(db, "Designers", designerId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+}
 
- // Get project by Id 
+// edit designer
+export async function editDesigner(designerId, designerData) {
+  const docRef = doc(db, "Designers", designerId);
+  await updateDoc(docRef, designerData);
+}
+
+// Get project by Id
 export async function getProjectById(projectId) {
-  const docRef = doc(db, "Projects", projectId)
-  const docSnap = await getDoc(docRef)
-  return docSnap.data()
- }
-
- 
+  const docRef = doc(db, "Projects", projectId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+}

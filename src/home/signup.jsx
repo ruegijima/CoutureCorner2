@@ -156,7 +156,13 @@ export function Signup() {
                         return;
                       }
                       localStorage.setItem("userId", payload.id.toString());
-                      localStorage.setItem("userInfo", JSON.stringify(payload));
+                      localStorage.setItem(
+                        "userInfo",
+                        JSON.stringify({
+                          email: payload.email,
+                          name: payload.name,
+                        })
+                      );
                       notification({
                         status: "success",
                         message: "Account created successfully",

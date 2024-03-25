@@ -4,7 +4,7 @@ import { Home } from "../home/Home.jsx";
 import { NotFound } from "./NotFound.jsx";
 import { Layout } from "./Layout.jsx";
 import { Shop } from "../home/shop.jsx";
-import {About} from "../home/about.jsx"
+import { About } from "../home/about.jsx";
 import { Blog } from "../home/blog.jsx";
 import { Cart } from "../home/cart.jsx";
 import { Community } from "../home/community.jsx";
@@ -24,6 +24,7 @@ import { Signup } from "../home/signup.jsx";
 import { UserProfileCreate } from "../home/userprofilecreate.jsx";
 import { Nav } from "../home/nav.jsx";
 import { Footer } from "../home/footer.jsx";
+import { Dashboard } from "../home/dashboard.jsx";
 
 export const Router = () => (
   <Routes>
@@ -102,6 +103,15 @@ export const Router = () => (
           <Nav />
           <Contact />
           <Footer />
+        </Layout>
+      }
+    />
+    <Route
+      path="/dashboard"
+      element={
+        <Layout>
+          <Nav />
+          <Dashboard />
         </Layout>
       }
     />

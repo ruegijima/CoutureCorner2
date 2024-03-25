@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProjectById, getAllProductsForProject } from "../api"; // Ensure you have these functions properly defined and imported
 
@@ -16,7 +16,7 @@ export const ProjectDetail = () => {
         if (projectResponse) {
           console.log(projectResponse)
           setProject(projectResponse);
-          
+
           // Fetch products for this project
           const productsResponse = await getAllProductsForProject(projectId);
           if (productsResponse) {

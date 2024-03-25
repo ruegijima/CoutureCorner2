@@ -1,8 +1,7 @@
-
 import { Link } from "react-router-dom";
 export const Footer = () => (
-  <footer className="border-t-2 border-green-200 bg-white">
-    <div className="container mx-auto px-6 py-10">
+  <footer className="mt-auto border-t-2 border-green-200">
+    <div className="container mx-auto px-6 py-5">
       <div className="flex flex-col items-center justify-between md:flex-row">
         <div className="mb-6 md:mb-0">
           <Link
@@ -16,7 +15,7 @@ export const Footer = () => (
           </p>
         </div>
 
-        <nav className="mb-6 flex flex-wrap items-center justify-center text-sm md:mb-0">
+        <nav className="mb-2 flex flex-wrap items-center justify-center text-sm md:mb-0">
           <Link
             to="/about"
             className="m-2 text-green-600 hover:text-green-700 hover:underline"
@@ -71,7 +70,7 @@ export const Footer = () => (
         </div>
       </div>
 
-      <div className="mt-10 py-8 text-center">
+      <div className="mt-0 py-8 text-center">
         <p className="text-sm text-gray-600">
           © 2024 CoutureCorner. All Rights Reserved. Content may not be
           reproduced without permission.
