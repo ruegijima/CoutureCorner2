@@ -15,6 +15,7 @@ import {
 } from "./DesignersProfileCreate";
 import { toast } from "react-hot-toast";
 import notification from "../components/notification";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
   // gbet query "tab"
@@ -35,11 +36,22 @@ export const Dashboard = () => {
     setProjects(projectsResponse);
   };
 
+  const navigate = useNavigate();
+
+  function newFunction() {
+    notification({
+      status: "error",
+      message: "You need to be logged in as a designer to view this page",
+    });
+    navigate("/shop");
+    return;
+  }
+
   useEffect(() => {
     const id = localStorage.getItem("designerId");
 
     if (!id) {
-      return;
+      newFunction();
     }
     setDesignerId(id);
 

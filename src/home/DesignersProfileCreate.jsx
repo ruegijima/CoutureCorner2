@@ -702,7 +702,7 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
                 value="valentines"
                 checked={tags.includes("valentines")}
                 onChange={(e) => {
-                  if (e.target.checked) {
+                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
                   } else {
                     setTags(tags.filter((x) => x !== e.target.value));

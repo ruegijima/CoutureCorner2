@@ -108,7 +108,7 @@ export const Designers = () => {
                 <img
                   src={designer?.designerPic ?? "/portfolio-item-1.webp"}
                   alt="Designer Work"
-                  className="mb-4 h-auto w-full rounded-lg bg-white"
+                  className="mb-4 h-auto min-h-[400px] w-full rounded-lg bg-white"
                 />
                 <h3 className="text-lg font-semibold">{designer.name}</h3>
               </Link>

@@ -4,6 +4,7 @@ import { db } from "../firebaseConfig/config";
 import { Link } from "react-router-dom";
 import { useQuery } from "./useQuery";
 import { useDeferredValue } from "react";
+import toast from "react-hot-toast";
 
 export const Shop = () => {
   const [products, setProducts] = useState([]);
@@ -34,6 +35,13 @@ export const Shop = () => {
   const handleAddToCart = (product, e) => {
     e.preventDefault();
     console.log("Attempting to add product:", product);
+
+    if (!localStorage.getItem("userId")) {
+      toast("Please login to add products to cart", {
+        icon: "🚨",
+      });
+      return;
+    }
 
     setCart((prevCart) => {
       const isProductInCart = prevCart.find((item) => item.id === product.id);

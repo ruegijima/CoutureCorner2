@@ -11,12 +11,12 @@ export function DesignerPortfolio() {
   useEffect(() => {
     const fetchDesignerDetails = async () => {
       const designerResponse = await getDesignerById(designerId);
+      console.log(designerResponse);
       setDesigner(designerResponse);
     };
 
     const fetchProjects = async () => {
       const projectsResponse = await getAllProjectsForDesigner(designerId);
-      console.log(projectsResponse);
       setProjects(projectsResponse);
     };
 
@@ -80,7 +80,7 @@ export function DesignerPortfolio() {
           />
           <div className="p-6">
             <h2 className="mb-8 text-center text-4xl font-semibold">Profile</h2>
-            <div className="text-center">
+            <div className="flex flex-col gap-6 text-center">
               <img
                 src={designer?.designerPic || "/default-profile-image.webp"} // Use a default image if none is provided
                 alt={designer.name}
@@ -88,30 +88,123 @@ export function DesignerPortfolio() {
               />
               {/* Dynamic designer details */}
               <h3 className="mb-2 text-4xl font-semibold">{designer.name}</h3>
+              <div className="mx-auto flex w-max items-center gap-4">
+                <p className="mx-auto flex w-max items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-map-pin text-green-600"
+                  >
+                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                  </svg>{" "}
+                  <strong>{designer.brandname}</strong>
+                </p>
+                <p className="mx-auto flex w-max items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-map-pin text-green-600"
+                  >
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>{" "}
+                  <strong>{designer.location}</strong>
+                </p>
+              </div>
+
               <p>
-                Brand Name: <strong>{designer.brand}</strong>
+                <span className="font-bold text-green-600">
+                  {designer.yearsOfExperience}
+                </span>{" "}
+                years of experience
               </p>
               <p>
-                Located in: <strong>{designer.location}</strong>
+                Design Philosophy: <br />
+                <em>{designer.philosophy}</em>
               </p>
               <p>
-                Experience: <strong>{designer.experience}</strong>
+                Bio: <br /> <em>{designer.bio}</em>
               </p>
-              <p>
-                Design Philosophy: <em>{designer.philosophy}</em>
-              </p>
-              <p>
-                Bio: <em>{designer.bio}</em>
-              </p>
-              <p>
-                Achievements: <strong>{designer.achievements}</strong>
-              </p>
-              <p>
-                Previous Collaborations:{" "}
-                <strong>{designer.previousCollaborations}</strong>
-              </p>
-              <p>
-                Inspirations: <strong>{designer.inspirations}</strong>
+              <p className="mx-auto flex w-max items-center gap-4">
+                <a
+                  href={designer.twitterURL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-twitter text-green-600"
+                  >
+                    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                  </svg>
+                </a>
+                <a
+                  href={designer.facebookURL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-facebook text-green-600"
+                  >
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                  </svg>
+                </a>
+                <a
+                  href={designer.instagramURL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-instagram text-green-600"
+                  >
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  </svg>
+                </a>
               </p>
             </div>
           </div>
@@ -124,7 +217,10 @@ export function DesignerPortfolio() {
                 key={project.id}
                 className="rounded-lg bg-white p-4 shadow-lg"
               >
-                <Link to={`/designers/${designerId}/${project.id}`} className="block">
+                <Link
+                  to={`/designers/${designerId}/${project.id}`}
+                  className="block"
+                >
                   <img
                     src={project?.projectPic || "/portfolio-item-2.webp"}
                     alt={project.title}

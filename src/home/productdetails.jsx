@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../api";
+import { toast } from "react-hot-toast";
 
 export function ProductDetails() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [showSizeChart, setShowSizeChart] = useState(false);
-  const [cart, setCart] = useState(() => {
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
     const localCart = localStorage.getItem("cart");
-    return localCart ? JSON.parse(localCart) : [];
-  });
+    if (!localCart) return;
+    setCart(localCart ? JSON.parse(localCart) : []);
+  }, []);
 
   // step 2 - fetch the details of the product using product Id
   useEffect(() => {
@@ -21,23 +25,32 @@ export function ProductDetails() {
   }, [productId]);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
   }, [cart]);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
 
+    if (!localStorage.getItem("userId")) {
+      toast("Please login to add products to cart", {
+        icon: "🚨",
+      });
+      return;
+    }
+
     setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === product.id);
+      const existingProduct = prevCart.find((item) => item.id === productId);
 
       if (existingProduct) {
         return prevCart.map((item) =>
-          item.id === product.id
+          item.id === productId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        return [...prevCart, { ...product, quantity: 1, id: productId }];
       }
     });
   };
@@ -53,8 +66,6 @@ export function ProductDetails() {
   const toggleSizeChart = () => {
     setShowSizeChart(!showSizeChart);
   };
-
-  console.log(cart);
 
   return (
     <main>
@@ -142,7 +153,7 @@ export function ProductDetails() {
               </button>
             ) : (
               <button
-                onClick={handleAddToCart}
+                onClick={(e) => handleAddToCart(e)}
                 className="w-full rounded bg-green-600 px-6 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-700"
               >
                 Add to Cart
