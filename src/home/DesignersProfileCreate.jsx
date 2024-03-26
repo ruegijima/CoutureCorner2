@@ -716,8 +716,8 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
               <input
                 type="checkbox"
                 name="tags"
-                value="spring"
-                checked={tags.includes("spring")}
+                value="casual"
+                checked={tags.includes("casual")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -727,7 +727,7 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
                 }}
                 className="form-checkbox"
               />
-              <span className="ml-2">Spring Collection</span>
+              <span className="ml-2">Casual Chic</span>
             </label>
             <label className="inline-flex items-center">
               <input
@@ -744,7 +744,7 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
                 }}
                 className="form-checkbox"
               />
-              <span className="ml-2">Summer Collection</span>
+              <span className="ml-2">Summer Essentials</span>
             </label>
             <label className="inline-flex items-center">
               <input
@@ -767,8 +767,8 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
               <input
                 type="checkbox"
                 name="tags"
-                value="fall"
-                checked={tags.includes("fall")}
+                value="formal"
+                checked={tags.includes("formal")}
                 onChange={(e) => {
                   if (e.target.checked) {
                     setTags([...tags, e.target.value]);
@@ -778,7 +778,7 @@ export function AddProject({ closeModal, saveProject, isEdit }) {
                 }}
                 className="form-checkbox"
               />
-              <span className="ml-2">Fall Collection</span>
+              <span className="ml-2">Formal Affairs</span>
             </label>
           </div>
         </div>
