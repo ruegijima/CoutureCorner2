@@ -69,7 +69,7 @@ export const Cart = () => {
                           {/* Image and product details */}
                           <img
                             className="mr-3 h-10 w-10 rounded-full object-cover"
-                            src={"/Cart1.webp"}
+                            src={item.productImage}
                             alt={item.name}
                           />
                           <div>
