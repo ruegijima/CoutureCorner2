@@ -15,6 +15,9 @@ export function ProductDetails() {
     setCart(localCart ? JSON.parse(localCart) : []);
   }, []);
 
+  const [quantity, setQuantity] = useState(1); // State to manage quantity
+
+
   // step 2 - fetch the details of the product using product Id
   useEffect(() => {
     const getproductdetails = async () => {
@@ -32,28 +35,29 @@ export function ProductDetails() {
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-
+  
     if (!localStorage.getItem("userId")) {
       toast("Please login to add products to cart", {
         icon: "🚨",
       });
       return;
     }
-
+  
     setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === productId);
-
-      if (existingProduct) {
-        return prevCart.map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+      const existingProductIndex = prevCart.findIndex(
+        (item) => item.id === productId
+      );
+  
+      if (existingProductIndex !== -1) {
+        const updatedCart = [...prevCart];
+        updatedCart[existingProductIndex].quantity += quantity; // Update quantity
+        return updatedCart;
       } else {
-        return [...prevCart, { ...product, quantity: 1, id: productId }];
+        return [...prevCart, { ...product, quantity: quantity, id: productId }];
       }
     });
   };
+  
 
   if (!product) {
     return <div>Loading product details...</div>;
@@ -131,14 +135,30 @@ export function ProductDetails() {
               >
                 Quantity:
               </label>
-              <input
-                type="number"
-                id="quantity"
-                value="1"
-                min="1"
-                className="w-full rounded border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500"
-              />
+              <div className="flex items-center">
+                <button
+                  onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)} // Decrease quantity
+                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded-l"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  id="quantity"
+                  value={quantity}
+                  min="1"
+                  className="w-full rounded border border-gray-300 px-4 py-2 text-center focus:ring-2 focus:ring-green-500"
+                  onChange={(e) => setQuantity(parseInt(e.target.value) || 1)} // Update quantity
+                />
+                <button
+                  onClick={() => setQuantity(quantity + 1)} // Increase quantity
+                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded-r"
+                >
+                  +
+                </button>
+              </div>
             </div>
+
 
             {/* Optionally, include a remove button if the product is in the cart */}
             {cart.find((item) => item.id === productId) ? (
